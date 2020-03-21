@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{08B5FE05-9B2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarExtractor.API", "src\CalendarExtractor.API\CalendarExtractor.API.csproj", "{6AD7BE9E-F3B2-4BD6-BD05-E1B6C27AAA1E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{09E9730A-00E4-4148-94FF-86EC7DF6FCA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarExtractor.API.Tests", "test\CalendarExtractor.API.Tests\CalendarExtractor.API.Tests.csproj", "{219241F5-3FA7-480F-94EC-FBE5F05F4D21}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,8 +36,21 @@ Global
 		{6AD7BE9E-F3B2-4BD6-BD05-E1B6C27AAA1E}.Release|x64.Build.0 = Release|Any CPU
 		{6AD7BE9E-F3B2-4BD6-BD05-E1B6C27AAA1E}.Release|x86.ActiveCfg = Release|Any CPU
 		{6AD7BE9E-F3B2-4BD6-BD05-E1B6C27AAA1E}.Release|x86.Build.0 = Release|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Debug|x64.Build.0 = Debug|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Debug|x86.Build.0 = Debug|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Release|x64.ActiveCfg = Release|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Release|x64.Build.0 = Release|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Release|x86.ActiveCfg = Release|Any CPU
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6AD7BE9E-F3B2-4BD6-BD05-E1B6C27AAA1E} = {08B5FE05-9B24-44DE-97F7-BCBB3E2EB324}
+		{219241F5-3FA7-480F-94EC-FBE5F05F4D21} = {09E9730A-00E4-4148-94FF-86EC7DF6FCA0}
 	EndGlobalSection
 EndGlobal
