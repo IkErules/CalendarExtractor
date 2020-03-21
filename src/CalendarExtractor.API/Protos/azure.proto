@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "CalendarExtractor.API";
+
+package azure;
+
+// The greeting service definition.
+service Azure {
+	// Sends a greeting
+	rpc SayHello (AzureRequest) returns (AzureReply);
+}
+
+// The request message containing the user's name.
+message AzureRequest {
+	string name = 1;
+}
+
+// The response message containing the greetings.
+message AzureReply {
+	string message = 1;
+}
