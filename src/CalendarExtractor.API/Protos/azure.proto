@@ -12,7 +12,9 @@ service Azure {
 
 // The request message containing the user's name.
 message AzureRequest {
-	string name = 1;
+	string clientId = 1;
+	string clientSecret = 2;
+	string tenantId = 3;
 }
 
 // The response message containing the greetings.
