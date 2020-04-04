@@ -4,21 +4,32 @@ option csharp_namespace = "CalendarExtractor.API";
 
 package azure;
 
-// The greeting service definition.
 service Azure {
-	// Sends a greeting
-	rpc SayHello (AzureRequest) returns (AzureReply);
+	rpc GetCalendarInformation (AzureRequest) returns (AzureReply);
 }
 
-// The request message containing the user's name.
 message AzureRequest {
-	string clientId = 1;
-	string clientSecret = 2;
-	string tenantId = 3;
-	string calendarId = 4;
+	message Client {
+		string clientId = 1;
+		string clientSecret = 2;
+		string tenantId = 3;
+	}
+	message Calendar {
+		string calendarId = 1;
+		string beginnDateTime = 2;
+		string endDateTime = 3;
+	}
+	Client client = 1;
+	Calendar calendar = 2;
 }
 
-// The response message containing the greetings.
 message AzureReply {
-	string message = 1;
+	message Event {
+		string Subject = 1;
+		string beginnDateTime = 2;
+		string endDateTime = 3;
+	}
+	bool isOccupied = 1;
+	repeated Event event = 2;
+
 }

@@ -5,11 +5,11 @@ using Microsoft.Graph;
 
 namespace CalendarExtractor.API.Helper
 {
-    public class GraphHelper
+    public class GraphCalendarHelper
     {
         private readonly GraphServiceClient _graphClient;
 
-        public GraphHelper(IAuthenticationProvider authProvider)
+        public GraphCalendarHelper(IAuthenticationProvider authProvider)
         {
             _graphClient = new GraphServiceClient(authProvider);
         }

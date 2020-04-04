@@ -10,12 +10,11 @@ namespace CalendarExtractor.API.Helper
     public class DeviceCodeAuthProvider : IAuthenticationProvider
     {
         private readonly IConfidentialClientApplication _msalClient;
-        private readonly string[] _scopes;
+        private readonly string[] _scope = {"https://graph.microsoft.com/.default"};
         private IAccount _userAccount;
 
-        public DeviceCodeAuthProvider(string clientId, string secret, string authority, string[] scopes)
+        public DeviceCodeAuthProvider(string clientId, string secret, string authority)
         {
-            _scopes = scopes;
             _msalClient = ConfidentialClientApplicationBuilder.Create(clientId)
                .WithClientSecret(secret)
                .WithAuthority(new Uri(authority))
@@ -39,7 +38,7 @@ namespace CalendarExtractor.API.Helper
                 try
                 {
                     // Invoke device code flow so user can sign-in with a browser
-                    var result = await _msalClient.AcquireTokenForClient(_scopes).ExecuteAsync();
+                    var result = await _msalClient.AcquireTokenForClient(_scope).ExecuteAsync();
 
                     _userAccount = result.Account;
                     return result.AccessToken;
@@ -56,7 +55,7 @@ namespace CalendarExtractor.API.Helper
                 // By doing this, MSAL will refresh the token automatically if
                 // it is expired. Otherwise it returns the cached token.
                 var result = await _msalClient
-                    .AcquireTokenSilent(_scopes, _userAccount)
+                    .AcquireTokenSilent(_scope, _userAccount)
                     .ExecuteAsync();
 
                 return result.AccessToken;
