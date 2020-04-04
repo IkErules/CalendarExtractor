@@ -15,6 +15,7 @@ message AzureRequest {
 	string clientId = 1;
 	string clientSecret = 2;
 	string tenantId = 3;
+	string calendarId = 4;
 }
 
 // The response message containing the greetings.

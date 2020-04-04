@@ -1,5 +1,7 @@
 using System;
 using System.Globalization;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using CalendarExtractor.API.Helper;
 using Grpc.Core;
@@ -18,17 +20,18 @@ namespace CalendarExtractor.API
 
         public override Task<AzureReply> SayHello(AzureRequest request, ServerCallContext context)
         {
+            _logger.LogInformation($"Get Request for {request.CalendarId}");
             return Task.FromResult(new AzureReply
             {
-                Message = $"Hello {request.ClientId} your Secret is {request.ClientSecret} and you belong" +
-                          $"to TenantID {request.TenantId}"
+                Message = Test(request)
             });
         }
 
-        private void Test(AzureRequest request)
+        private string Test(AzureRequest request)
         {
-            var authority = string.Format(CultureInfo.InvariantCulture, "https://login.microsoftonline.com/{0}", 
+            var authority = string.Format(CultureInfo.InvariantCulture, "https://login.microsoftonline.com/{0}",
                 request.TenantId);
+                
             const string scopesString = "https://graph.microsoft.com/.default";
             var scopes = scopesString.Split(';');
 
@@ -37,28 +40,29 @@ namespace CalendarExtractor.API
             // Initialize Graph client
             var graphHelper = new GraphHelper(authProvider);
 
-            ListCalendarEvents(graphHelper);
+            return ListCalendarEventsFor(request.CalendarId, graphHelper);
         }
 
-        private void ListCalendarEvents(GraphHelper graphHelper)
+        private string ListCalendarEventsFor(string calendarId, GraphHelper graphHelper)
         {
-            var events = graphHelper.GetEventsAsync().Result;
-
-            Console.WriteLine("Events:");
+            var events = graphHelper.GetEventsAsync(calendarId).Result;
+            
+            var builder = new StringBuilder();
+            builder.AppendLine("Events:");
 
             foreach (var calendarEvent in events)
             {
-                // List of Users
-                //Console.WriteLine($"DisplayName: {calendarEvent.DisplayName}");
-                //Console.WriteLine($"Mail: {calendarEvent.Mail}");
-                //Console.WriteLine($"UserPrincipalName: {calendarEvent.UserPrincipalName}");
-                //Console.WriteLine($"Id: {calendarEvent.Id}");
-
-                Console.WriteLine($"Subject: {calendarEvent.Subject}");
-                Console.WriteLine($"  Organizer: {calendarEvent.Organizer.EmailAddress.Name}");
-                Console.WriteLine($"  Start: {FormatDateTimeTimeZone(calendarEvent.Start)}");
-                Console.WriteLine($"  End: {FormatDateTimeTimeZone(calendarEvent.End)}");
+                builder.AppendLine("-------------NEW EVENT---------------");
+                builder.AppendLine($"Subject: {calendarEvent.Subject}");
+                if (calendarEvent.Importance != null) builder.AppendLine($"Subject: {calendarEvent.Importance.Value}");
+                builder.AppendLine($"Subject: {calendarEvent.Subject}");
+                builder.AppendLine($"  Organizer: {calendarEvent.Organizer.EmailAddress.Name}");
+                calendarEvent.Attendees.ToList().ForEach(a => builder.AppendLine($"  Attendee: {a.EmailAddress.Name}"));
+                builder.AppendLine($"  Start: {FormatDateTimeTimeZone(calendarEvent.Start)}");
+                builder.AppendLine($"  End: {FormatDateTimeTimeZone(calendarEvent.End)}");
             }
+
+            return builder.ToString();
         }
 
         private string FormatDateTimeTimeZone(Microsoft.Graph.DateTimeTimeZone value)

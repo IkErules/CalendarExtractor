@@ -7,24 +7,19 @@ namespace CalendarExtractor.API.Helper
 {
     public class GraphHelper
     {
-        private GraphServiceClient _graphClient;
+        private readonly GraphServiceClient _graphClient;
 
         public GraphHelper(IAuthenticationProvider authProvider)
         {
             _graphClient = new GraphServiceClient(authProvider);
         }
 
-        public async Task<IEnumerable<Event>> GetEventsAsync()
+        public async Task<IEnumerable<Event>> GetEventsAsync(string calendarId)
         {
             try
             {
-                //var resultPage = await graphClient.Users.Request().GetAsync();
-
-                // GET /me/events
-                var resultPage = await _graphClient.Users["b203f6a3-c3bd-48bf-9183-563b78ee852b"].Events.Request()
-                    // Only return the fields used by the application
-                    .Select("subject,organizer,start,end")
-                    // Sort results by when they were created, newest first
+                var resultPage = await _graphClient.Users[calendarId].Events.Request()
+                    //.Select("subject,organizer,start,end")
                     .OrderBy("createdDateTime DESC")
                     .GetAsync();
 
