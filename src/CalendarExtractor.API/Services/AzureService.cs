@@ -8,6 +8,7 @@ using Google.Protobuf.Collections;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
+using static CalendarExtractor.API.Helper.DateTimeOffsetFormatter;
 
 namespace CalendarExtractor.API
 {
@@ -26,8 +27,9 @@ namespace CalendarExtractor.API
             _logger.LogInformation($"Get Request for {request.Calendar.CalendarId}");
 
             var graphCalendarClient = CreateGraphCalendarClient(request.Client);
+            var events = ListCalendarEventsFor(request.Calendar, graphCalendarClient);
 
-            return Task.FromResult(ListCalendarEventsFor(request.Calendar, graphCalendarClient));
+            return Task.FromResult(CreateAzureReplyOf(events));
         }
 
         private GraphCalendarHelper CreateGraphCalendarClient(AzureRequest.Types.Client client)
@@ -38,34 +40,23 @@ namespace CalendarExtractor.API
             return new GraphCalendarHelper(authProvider);
         }
 
-        private AzureReply ListCalendarEventsFor(AzureRequest.Types.Calendar calendar, GraphCalendarHelper graphCalendarHelper)
+        private IEnumerable<Event> ListCalendarEventsFor(AzureRequest.Types.Calendar calendar, GraphCalendarHelper graphCalendarHelper)
         {
             var events = graphCalendarHelper.GetEventsAsync(calendar).Result;
-
-            events = FilterEventsWithStartAndEndTimeOf(calendar, events);
-            var azureReply = CreateAzureReplyOf(events);
-
-            return azureReply;
+            return FilterEventsWithStartAndEndTimeOf(calendar, events);
         }
 
-        internal IEnumerable<Event> FilterEventsWithStartAndEndTimeOf(AzureRequest.Types.Calendar calendar, IEnumerable<Event> events)
+        private IEnumerable<Event> FilterEventsWithStartAndEndTimeOf(AzureRequest.Types.Calendar calendar, IEnumerable<Event> events)
         {
             DateTimeOffset startTime = calendar.BeginnDateTime.ToDateTime().ToLocalTime();
             DateTimeOffset endTime = calendar.EndDateTime.ToDateTime().ToLocalTime();
 
-            _logger.LogInformation($"Send startTime: {startTime}");
-            _logger.LogInformation($"Send endTime: {endTime}");
+            _logger.LogInformation($"Sent startTime: {startTime}");
+            _logger.LogInformation($"Sent endTime: {endTime}");
 
-            return events
-                .Where(e => (FormatDateTimeTimeZoneToLocal(e.Start).DateTime.CompareTo(startTime.DateTime) < 0
-                                && FormatDateTimeTimeZoneToLocal(e.End).DateTime.CompareTo(startTime.DateTime) > 0)
-                            || (FormatDateTimeTimeZoneToLocal(e.Start).DateTime.CompareTo(startTime.DateTime) > 0 
-                                && FormatDateTimeTimeZoneToLocal(e.End).DateTime.CompareTo(endTime.DateTime) < 0)
-                            || (FormatDateTimeTimeZoneToLocal(e.Start).DateTime.CompareTo(endTime.DateTime) < 0 
-                                && FormatDateTimeTimeZoneToLocal(e.End).DateTime.CompareTo(endTime.DateTime) > 0));
+            var eventFilter = new EventFilter(events);
+            return eventFilter.FilterEventsFor(startTime, endTime);
         }
-
-        //private Predicate<>
 
         private AzureReply CreateAzureReplyOf(IEnumerable<Event> events)
         {
@@ -110,17 +101,6 @@ namespace CalendarExtractor.API
             }
 
             return builder.ToString();
-        }
-
-        private DateTimeOffset FormatDateTimeTimeZoneToLocal(DateTimeTimeZone value)
-        {
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(value.TimeZone);
-            var dateTime = DateTime.Parse(value.DateTime);
-
-            var dateTimeWithTZ = new DateTimeOffset(dateTime, timeZone.BaseUtcOffset)
-                .ToLocalTime();
-
-            return dateTimeWithTZ;
         }
     }
 }
