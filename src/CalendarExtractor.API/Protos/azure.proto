@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 option csharp_namespace = "CalendarExtractor.API";
 
 package azure;
@@ -16,8 +18,8 @@ message AzureRequest {
 	}
 	message Calendar {
 		string calendarId = 1;
-		string beginnDateTime = 2;
-		string endDateTime = 3;
+		google.protobuf.Timestamp beginnDateTime = 2;
+		google.protobuf.Timestamp endDateTime = 3;
 	}
 	Client client = 1;
 	Calendar calendar = 2;

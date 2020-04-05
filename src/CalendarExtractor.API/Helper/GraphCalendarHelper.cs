@@ -14,12 +14,12 @@ namespace CalendarExtractor.API.Helper
             _graphClient = new GraphServiceClient(authProvider);
         }
 
-        public async Task<IEnumerable<Event>> GetEventsAsync(string calendarId)
+        public async Task<IEnumerable<Event>> GetEventsAsync(AzureRequest.Types.Calendar calendar)
         {
             try
             {
-                var resultPage = await _graphClient.Users[calendarId].Events.Request()
-                    //.Select("subject,organizer,start,end")
+                var resultPage = await _graphClient.Users[calendar.CalendarId].Events.Request()
+                    //.Select("subject,organizer,start,end") 
                     .OrderBy("createdDateTime DESC")
                     .GetAsync();
 
@@ -31,5 +31,5 @@ namespace CalendarExtractor.API.Helper
                 return null;
             }
         }
-    }
+        }
 }

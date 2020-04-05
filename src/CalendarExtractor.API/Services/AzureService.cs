@@ -30,8 +30,6 @@ namespace CalendarExtractor.API
             return Task.FromResult(ListCalendarEventsFor(request.Calendar, graphCalendarClient));
         }
 
-        
-
         private GraphCalendarHelper CreateGraphCalendarClient(AzureRequest.Types.Client client)
         {
             var authority = string.Join('/', BaseAuthorityUrl, client.TenantId);
@@ -42,10 +40,37 @@ namespace CalendarExtractor.API
 
         private AzureReply ListCalendarEventsFor(AzureRequest.Types.Calendar calendar, GraphCalendarHelper graphCalendarHelper)
         {
-            var events = graphCalendarHelper.GetEventsAsync(calendar.CalendarId).Result;
+            var events = graphCalendarHelper.GetEventsAsync(calendar).Result;
 
+            events = FilterEventsWithStartAndEndTimeOf(calendar, events);
+            var azureReply = CreateAzureReplyOf(events);
+
+            return azureReply;
+        }
+
+        internal IEnumerable<Event> FilterEventsWithStartAndEndTimeOf(AzureRequest.Types.Calendar calendar, IEnumerable<Event> events)
+        {
+            DateTimeOffset startTime = calendar.BeginnDateTime.ToDateTime().ToLocalTime();
+            DateTimeOffset endTime = calendar.EndDateTime.ToDateTime().ToLocalTime();
+
+            _logger.LogInformation($"Send startTime: {startTime}");
+            _logger.LogInformation($"Send endTime: {endTime}");
+
+            return events
+                .Where(e => (FormatDateTimeTimeZoneToLocal(e.Start).DateTime.CompareTo(startTime.DateTime) < 0
+                                && FormatDateTimeTimeZoneToLocal(e.End).DateTime.CompareTo(startTime.DateTime) > 0)
+                            || (FormatDateTimeTimeZoneToLocal(e.Start).DateTime.CompareTo(startTime.DateTime) > 0 
+                                && FormatDateTimeTimeZoneToLocal(e.End).DateTime.CompareTo(endTime.DateTime) < 0)
+                            || (FormatDateTimeTimeZoneToLocal(e.Start).DateTime.CompareTo(endTime.DateTime) < 0 
+                                && FormatDateTimeTimeZoneToLocal(e.End).DateTime.CompareTo(endTime.DateTime) > 0));
+        }
+
+        //private Predicate<>
+
+        private AzureReply CreateAzureReplyOf(IEnumerable<Event> events)
+        {
             var azureReply = new AzureReply();
-            if (events.Any())
+            if (events?.Any() ?? false)
             {
                 azureReply.IsOccupied = true;
                 azureReply.Event.AddRange(CreateReplyEventsOf(events));
@@ -57,18 +82,19 @@ namespace CalendarExtractor.API
         private IEnumerable<AzureReply.Types.Event> CreateReplyEventsOf(IEnumerable<Event> graphEvents)
         {
             return graphEvents
+                .OrderBy(g => g.Start.DateTime)
                 .Select(e => new AzureReply.Types.Event
                 {
                     Subject = e.Subject,
-                    BeginnDateTime = FormatDateTimeTimeZone(e.Start),
-                    EndDateTime = FormatDateTimeTimeZone(e.End)
+                    BeginnDateTime = FormatDateTimeTimeZoneToLocal(e.Start).ToString("g"),
+                    EndDateTime = FormatDateTimeTimeZoneToLocal(e.End).ToString("g")
                 });
         }
 
         private string ListCalendarEventsForTest(AzureRequest.Types.Calendar calendar,
             GraphCalendarHelper graphCalendarHelper)
         {
-            var events = graphCalendarHelper.GetEventsAsync(calendar.CalendarId).Result;
+            var events = graphCalendarHelper.GetEventsAsync(calendar).Result;
 
             var builder = new StringBuilder();
 
@@ -79,14 +105,14 @@ namespace CalendarExtractor.API
                     builder.AppendLine($"Importance: {calendarEvent.Importance.Value}");
                 builder.AppendLine($"  Organizer: {calendarEvent.Organizer.EmailAddress.Name}");
                 calendarEvent.Attendees.ToList().ForEach(a => builder.AppendLine($"  Attendee: {a.EmailAddress.Name}"));
-                builder.AppendLine($"  Start: {FormatDateTimeTimeZone(calendarEvent.Start)}");
-                builder.AppendLine($"  End: {FormatDateTimeTimeZone(calendarEvent.End)}");
+                builder.AppendLine($"  Start: {FormatDateTimeTimeZoneToLocal(calendarEvent.Start)}");
+                builder.AppendLine($"  End: {FormatDateTimeTimeZoneToLocal(calendarEvent.End)}");
             }
 
             return builder.ToString();
         }
 
-        private string FormatDateTimeTimeZone(DateTimeTimeZone value)
+        private DateTimeOffset FormatDateTimeTimeZoneToLocal(DateTimeTimeZone value)
         {
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(value.TimeZone);
             var dateTime = DateTime.Parse(value.DateTime);
@@ -94,7 +120,7 @@ namespace CalendarExtractor.API
             var dateTimeWithTZ = new DateTimeOffset(dateTime, timeZone.BaseUtcOffset)
                 .ToLocalTime();
 
-            return dateTimeWithTZ.ToString("g");
+            return dateTimeWithTZ;
         }
     }
 }
