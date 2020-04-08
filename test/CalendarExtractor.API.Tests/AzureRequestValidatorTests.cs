@@ -2,6 +2,8 @@
 using CalendarExtractor.API.Helper;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Xunit;
 
 namespace CalendarExtractor.API.Tests
@@ -9,6 +11,12 @@ namespace CalendarExtractor.API.Tests
     public class AzureRequestValidatorTests
     {
         private const string ValidGuidString = "816c3a23-7568-40a1-b12a-c65795fcbd92";
+        private ILogger<AzureRequestValidator> _logger;
+
+        public AzureRequestValidatorTests()
+        {
+            _logger = new Mock<ILogger<AzureRequestValidator>>().Object;
+        }
 
         [Fact]
         public void Validate_EmptyParams_ThrowsError()
@@ -31,7 +39,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator().Validate(request));
+            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
@@ -61,7 +69,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator().Validate(request));
+            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
@@ -83,7 +91,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator().Validate(request));
+            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
@@ -111,7 +119,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var actualRequestIsValid = new AzureRequestValidator().Validate(request);
+            var actualRequestIsValid = new AzureRequestValidator(_logger).Validate(request);
 
             // then
             Assert.True(actualRequestIsValid);

@@ -16,18 +16,20 @@ namespace CalendarExtractor.API
     public class AzureService : Azure.AzureBase
     {
         private readonly ILogger<AzureService> _logger;
+        private readonly IRequestValidator _requestValidator;
         private const string BaseAuthorityUrl = "https://login.microsoftonline.com";
 
-        public AzureService(ILogger<AzureService> logger)
+        public AzureService(ILogger<AzureService> logger, IRequestValidator requestValidator)
         {
             _logger = logger;
+            _requestValidator = requestValidator;
         }
 
         public override Task<AzureReply> GetCalendarInformation(AzureRequest request, ServerCallContext context)
         {
             _logger.LogInformation($"Get Request for {request.Calendar.CalendarId}");
 
-            new AzureRequestValidator().Validate(request);
+            _requestValidator.Validate(request);
 
             var graphCalendarClient = CreateGraphCalendarClient(request.Client);
             var events = ListCalendarEventsFor(request.Calendar, graphCalendarClient);

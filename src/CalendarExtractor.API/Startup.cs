@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CalendarExtractor.API.Helper;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,7 @@ namespace CalendarExtractor.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
+            services.AddTransient<IRequestValidator, AzureRequestValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
