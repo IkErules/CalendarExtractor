@@ -9,6 +9,7 @@ using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using static CalendarExtractor.API.Helper.DateTimeOffsetFormatter;
+using Status = Grpc.Core.Status;
 
 namespace CalendarExtractor.API
 {
@@ -26,12 +27,14 @@ namespace CalendarExtractor.API
         {
             _logger.LogInformation($"Get Request for {request.Calendar.CalendarId}");
 
+            new AzureRequestValidator().Validate(request);
+
             var graphCalendarClient = CreateGraphCalendarClient(request.Client);
             var events = ListCalendarEventsFor(request.Calendar, graphCalendarClient);
 
             return Task.FromResult(CreateAzureReplyOf(events));
         }
-
+        
         private GraphCalendarHelper CreateGraphCalendarClient(AzureRequest.Types.Client client)
         {
             var authority = string.Join('/', BaseAuthorityUrl, client.TenantId);
