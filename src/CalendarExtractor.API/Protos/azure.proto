@@ -8,6 +8,7 @@ package azure;
 
 service Azure {
 	rpc GetCalendarInformation (AzureRequest) returns (AzureReply);
+	rpc TestGetCalendarInformation (AzureRequest) returns (AzureReply);
 }
 
 message AzureRequest {
@@ -18,8 +19,8 @@ message AzureRequest {
 	}
 	message Calendar {
 		string calendarId = 1;
-		google.protobuf.Timestamp beginnDateTime = 2;
-		google.protobuf.Timestamp endDateTime = 3;
+		google.protobuf.Timestamp beginTimestamp = 2;
+		google.protobuf.Timestamp endTimestamp = 3;
 	}
 	Client client = 1;
 	Calendar calendar = 2;
@@ -27,11 +28,9 @@ message AzureRequest {
 
 message AzureReply {
 	message Event {
-		string Subject = 1;
-		string beginnDateTime = 2;
-		string endDateTime = 3;
+		string subject = 1;
+		google.protobuf.Timestamp beginTimestamp = 2;
+		google.protobuf.Timestamp endTimestamp = 3;
 	}
-	bool isOccupied = 1;
-	repeated Event event = 2;
-
+	repeated Event event = 1;
 }

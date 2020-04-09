@@ -33,8 +33,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new AzureRequest.Types.Calendar
                 {
                     CalendarId = string.Empty,
-                    BeginnDateTime = CreateTimestampOf(DateTime.Now),
-                    EndDateTime = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTimestamp = CreateTimestampOf(DateTime.Now),
+                    EndTimestamp = CreateTimestampOf(DateTime.Now.AddDays(10))
                 }
             };
 
@@ -63,8 +63,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new AzureRequest.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginnDateTime = CreateTimestampOf(DateTime.Now),
-                    EndDateTime = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTimestamp = CreateTimestampOf(DateTime.Now),
+                    EndTimestamp = CreateTimestampOf(DateTime.Now.AddDays(10))
                 }
             };
 
@@ -85,8 +85,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new AzureRequest.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginnDateTime = CreateTimestampOf(DateTime.Now),
-                    EndDateTime = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTimestamp = CreateTimestampOf(DateTime.Now),
+                    EndTimestamp = CreateTimestampOf(DateTime.Now.AddDays(10))
                 }
             };
 
@@ -113,8 +113,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new AzureRequest.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginnDateTime = CreateTimestampOf(DateTime.Now),
-                    EndDateTime = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTimestamp = CreateTimestampOf(DateTime.Now),
+                    EndTimestamp = CreateTimestampOf(DateTime.Now.AddDays(10))
                 }
             };
 
