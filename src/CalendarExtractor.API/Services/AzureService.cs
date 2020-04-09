@@ -4,15 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalendarExtractor.API.Helper;
-using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using static CalendarExtractor.API.Helper.DateTimeOffsetFormatter;
-using Status = Grpc.Core.Status;
 
-namespace CalendarExtractor.API
+namespace CalendarExtractor.API.Services
 {
     public class AzureService : Azure.AzureBase
     {
