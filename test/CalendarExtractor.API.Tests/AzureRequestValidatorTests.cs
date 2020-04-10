@@ -27,7 +27,6 @@ namespace CalendarExtractor.API.Tests
                 Client = new AzureRequest.Types.Client
                 {
                     ClientId = string.Empty,
-                    ClientSecret = string.Empty,
                     TenantId = string.Empty,
                 },
                 Calendar = new AzureRequest.Types.Calendar
@@ -123,6 +122,89 @@ namespace CalendarExtractor.API.Tests
 
             // then
             Assert.True(actualRequestIsValid);
+        }
+
+        [Fact]
+        public void Validate_NullTimestamps_ThrowsException()
+        {
+            // given
+            var request = new AzureRequest
+            {
+                Client = new AzureRequest.Types.Client
+                {
+                    ClientId = ValidGuidString,
+                    ClientSecret = "mySecret",
+                    TenantId = ValidGuidString,
+                },
+                Calendar = new AzureRequest.Types.Calendar
+                {
+                    CalendarId = "myCalendar@microsoft.com",
+                    EndTimestamp = null
+                }
+            };
+
+            // when
+            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
+
+            // then
+            Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
+            Assert.Contains("begintimestamp, endtimestamp must not be null", ex.Message);
+        }
+
+        [Fact]
+        public void Validate_EndBeforeBeginTimestamps_ThrowsError()
+        {
+            // given
+            var request = new AzureRequest
+            {
+                Client = new AzureRequest.Types.Client
+                {
+                    ClientId = ValidGuidString,
+                    ClientSecret = "mySecret",
+                    TenantId = ValidGuidString,
+                },
+                Calendar = new AzureRequest.Types.Calendar
+                {
+                    CalendarId = "myCalendar@microsoft.com",
+                    BeginTimestamp = CreateTimestampOf(DateTime.Now),
+                    EndTimestamp = CreateTimestampOf(DateTime.Now.AddSeconds(-5))
+                }
+            };
+
+            // when
+            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
+
+            // then
+            Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
+            Assert.Contains("timestamps endTimestamp must be not before beginTimestamp", ex.Message);
+        }
+
+        [Fact]
+        public void Validate_EndEqualToBeginTimestamp_NoError()
+        {
+            // given
+            var timestamp = CreateTimestampOf(DateTime.Now);
+            var request = new AzureRequest
+            {
+                Client = new AzureRequest.Types.Client
+                {
+                    ClientId = ValidGuidString,
+                    ClientSecret = "mySecret",
+                    TenantId = ValidGuidString,
+                },
+                Calendar = new AzureRequest.Types.Calendar
+                {
+                    CalendarId = "myCalendar@microsoft.com",
+                    BeginTimestamp = timestamp,
+                    EndTimestamp = timestamp
+                }
+            };
+
+            // when
+            var actualValid = new AzureRequestValidator(_logger).Validate(request);
+
+            // then
+            Assert.True(actualValid);
         }
 
         private Timestamp CreateTimestampOf(DateTime dateTime)

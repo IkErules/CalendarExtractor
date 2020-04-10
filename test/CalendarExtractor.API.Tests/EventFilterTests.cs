@@ -89,6 +89,26 @@ namespace CalendarExtractor.API.Tests
             Assert.Contains(expectedSecondGraphEvent, actualFilteredEvents);
         }
 
+        [Fact]
+        public void FilterEvents_EqualBeginAndEndFilter_ReturnsOneEvent()
+        {
+            // given 
+            var dateTimeNow = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
+            var expectedGraphEvent = CreateGraphEvent(dateTimeNow, 120);
+            var secondGraphEvent = CreateGraphEvent(dateTimeNow.AddHours(5), 60);
+
+            var filterDateTime = DateTimeOffset.Now.AddMinutes(60);
+
+            // when
+            var eventFilter = new EventFilter(new List<Event> { expectedGraphEvent, secondGraphEvent });
+            var actualFilteredEvents = eventFilter.FilterEventsFor(filterDateTime, filterDateTime);
+
+            // then
+            Assert.True(actualFilteredEvents.Count() == 1);
+            var actualFilteredEvent = actualFilteredEvents.SingleOrDefault();
+            Assert.Equal(expectedGraphEvent, actualFilteredEvent);
+        }
+
         private Event CreateGraphEvent(DateTimeOffset start, int durationInMinutes)
         {
             const string timeZoneUtc = "UTC";
