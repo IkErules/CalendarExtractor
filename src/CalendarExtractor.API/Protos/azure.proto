@@ -7,8 +7,8 @@ option csharp_namespace = "CalendarExtractor.API";
 package azure;
 
 service Azure {
-	rpc GetCalendarInformation (AzureRequest) returns (AzureReply);
-	rpc TestGetCalendarInformation (AzureRequest) returns (AzureReply);
+	rpc GetCalendarInformation (AzureRequest) returns (stream AzureReplyEvent);
+	rpc TestGetCalendarInformation (AzureRequest) returns (stream AzureReplyEvent);
 }
 
 message AzureRequest {
@@ -26,11 +26,8 @@ message AzureRequest {
 	Calendar calendar = 2;
 }
 
-message AzureReply {
-	message Event {
-		string subject = 1;
-		google.protobuf.Timestamp beginTimestamp = 2;
-		google.protobuf.Timestamp endTimestamp = 3;
-	}
-	repeated Event event = 1;
+message AzureReplyEvent {
+	string subject = 1;
+	google.protobuf.Timestamp beginTimestamp = 2;
+	google.protobuf.Timestamp endTimestamp = 3;
 }

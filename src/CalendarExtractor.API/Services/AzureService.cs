@@ -24,28 +24,43 @@ namespace CalendarExtractor.API.Services
             _requestValidator = requestValidator;
         }
 
-        public override Task<AzureReply> GetCalendarInformation(AzureRequest request, ServerCallContext context)
+        public override async Task GetCalendarInformation(AzureRequest request, IServerStreamWriter<AzureReplyEvent> responseStream, ServerCallContext context)
         {
             _logger.LogInformation($"Get Request for {request.Calendar.CalendarId}");
 
             _requestValidator.Validate(request);
 
             var graphCalendarClient = CreateGraphCalendarClient(request.Client);
-            var events = ListCalendarEventsFor(request.Calendar, graphCalendarClient);
+            var graphEvents = ListCalendarEventsFor(request.Calendar, graphCalendarClient);
+            var azureReplyEvents = CreateReplyEventsOf(graphEvents);
 
-            return Task.FromResult(CreateAzureReplyOf(events));
+            _logger.LogInformation($"Sending response for request {request}");
+
+            foreach (var replyEvent in azureReplyEvents)
+            {
+                if (context.CancellationToken.IsCancellationRequested) break;
+                await responseStream.WriteAsync(replyEvent);
+            }
         }
 
-        public override Task<AzureReply> TestGetCalendarInformation(AzureRequest request, ServerCallContext context)
+        public override async Task TestGetCalendarInformation(AzureRequest request, IServerStreamWriter<AzureReplyEvent> responseStream, 
+            ServerCallContext context)
         {
             _logger.LogInformation($"Get Request for {request.Calendar.CalendarId}");
 
             _requestValidator.Validate(request);
 
             var graphCalendarClient = CreateGraphCalendarClient(request.Client);
-            var events = ListCalendarEventsFor(request.Calendar, graphCalendarClient);
+            var graphEvents = ListCalendarEventsFor(request.Calendar, graphCalendarClient);
+            var azureReplyEvents = CreateTestReplyEventsOf(graphEvents);
 
-            return Task.FromResult(TestCreateAzureReplyOf(events));
+            _logger.LogInformation($"Sending response for request {request}");
+
+            foreach (var replyEvent in azureReplyEvents)
+            {
+                if (context.CancellationToken.IsCancellationRequested) break;
+                await responseStream.WriteAsync(replyEvent);
+            }
         }
 
         private GraphCalendarHelper CreateGraphCalendarClient(AzureRequest.Types.Client client)
@@ -67,40 +82,17 @@ namespace CalendarExtractor.API.Services
             DateTimeOffset startTime = calendar.BeginTimestamp.ToDateTime().ToLocalTime();
             DateTimeOffset endTime = calendar.EndTimestamp.ToDateTime().ToLocalTime();
 
-            _logger.LogInformation($"Sent startTime: {startTime}");
-            _logger.LogInformation($"Sent endTime: {endTime}");
+            _logger.LogInformation($"Filter events for sent startTime: {startTime} and endTime {endTime}");
 
             var eventFilter = new EventFilter(events);
             return eventFilter.FilterEventsFor(startTime, endTime);
         }
 
-        private AzureReply CreateAzureReplyOf(IEnumerable<Event> events)
-        {
-            var azureReply = new AzureReply();
-            if (events?.Any() ?? false)
-            {
-                azureReply.Event.AddRange(CreateReplyEventsOf(events));
-            }
-
-            return azureReply;
-        }
-
-        private AzureReply TestCreateAzureReplyOf(IEnumerable<Event> events)
-        {
-            var azureReply = new AzureReply();
-            if (events?.Any() ?? false)
-            {
-                azureReply.Event.AddRange(TestListCalendarEventsFor(events));
-            }
-
-            return azureReply;
-        }
-
-        private IEnumerable<AzureReply.Types.Event> CreateReplyEventsOf(IEnumerable<Event> graphEvents)
+        private IEnumerable<AzureReplyEvent> CreateReplyEventsOf(IEnumerable<Event> graphEvents)
         {
             return graphEvents
                 .OrderBy(g => g.Start.DateTime)
-                .Select(e => new AzureReply.Types.Event
+                .Select(e => new AzureReplyEvent
                 {
                     Subject = e.Subject,
                     BeginTimestamp = FormatDateTimeTimeZoneToLocal(e.Start).ToTimestamp(),
@@ -108,7 +100,7 @@ namespace CalendarExtractor.API.Services
                 });
         }
 
-        private IEnumerable<AzureReply.Types.Event> TestListCalendarEventsFor(IEnumerable<Event> graphEvents)
+        private IEnumerable<AzureReplyEvent> CreateTestReplyEventsOf(IEnumerable<Event> graphEvents)
         {
             return graphEvents
                 .OrderBy(g => g.Start.DateTime)
@@ -125,7 +117,7 @@ namespace CalendarExtractor.API.Services
                     builder.AppendLine($"  End: {FormatDateTimeTimeZoneToLocal(e.End)}");
                     builder.AppendLine($"  Location Name {e.Location.DisplayName}"); 
                     
-                    return new AzureReply.Types.Event
+                    return new AzureReplyEvent
                     {
                         Subject = builder.ToString(),
                         BeginTimestamp = FormatDateTimeTimeZoneToLocal(e.Start).ToTimestamp(),
