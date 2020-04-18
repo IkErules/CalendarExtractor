@@ -1,7 +1,49 @@
 ﻿@page "/"
+@using CalendarExtractor.Web.Client.Data
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+<h1>Make a simple API call to read calendars of rooms</h1>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<EditForm Model="@_azureRequestModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <p>
+        <label>
+            Client ID
+            <InputText id="clientId" @bind-Value="_azureRequestModel.ClientId" />
+        </label>
+    </p>
+
+    <p>
+        <label>
+            Client Secret
+            <InputText id="clientSecret" @bind-Value="_azureRequestModel.ClientSecret" />
+        </label>
+    </p>
+
+    <p>
+        <label>
+            Tenant ID
+            <InputText id="tenantId" @bind-Value="_azureRequestModel.TenantId" />
+        </label>
+    </p>
+    
+    <p>
+        <label>
+            Calendar ID
+            <InputText id="calendarId" @bind-Value="_azureRequestModel.CalendarId" />
+        </label>
+    </p>
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+@code {
+    private AzureRequestModel _azureRequestModel = new AzureRequestModel();
+
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+    }
+}
