@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{09E9730A-0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalendarExtractor.API.Tests", "test\CalendarExtractor.API.Tests\CalendarExtractor.API.Tests.csproj", "{219241F5-3FA7-480F-94EC-FBE5F05F4D21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendarExtractor.Web.Client", "src\CalendarExtractor.Web.Client\CalendarExtractor.Web.Client.csproj", "{E02DC16F-1272-4419-A904-44C3E10D32BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalendarExtractor.Web.Client", "src\CalendarExtractor.Web.Client\CalendarExtractor.Web.Client.csproj", "{E02DC16F-1272-4419-A904-44C3E10D32BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

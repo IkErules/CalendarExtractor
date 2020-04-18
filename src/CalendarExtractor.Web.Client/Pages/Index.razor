@@ -1,6 +1,7 @@
 ﻿@page "/"
+@using CalendarExtractor.API
 @using CalendarExtractor.Web.Client.Data
-
+@inject AzureService AzrueService
 
 <h1>Make a simple API call to read calendars of rooms</h1>
 
@@ -8,42 +9,70 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <p>
-        <label>
-            Client ID
-            <InputText id="clientId" @bind-Value="_azureRequestModel.ClientId" />
-        </label>
-    </p>
-
-    <p>
-        <label>
-            Client Secret
-            <InputText id="clientSecret" @bind-Value="_azureRequestModel.ClientSecret" />
-        </label>
-    </p>
-
-    <p>
-        <label>
-            Tenant ID
-            <InputText id="tenantId" @bind-Value="_azureRequestModel.TenantId" />
-        </label>
-    </p>
-    
-    <p>
-        <label>
-            Calendar ID
-            <InputText id="calendarId" @bind-Value="_azureRequestModel.CalendarId" />
-        </label>
-    </p>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>Client ID</td>
+                <td><InputText id="clientId" @bind-Value="_azureRequestModel.ClientId" @bind-style="_inputWidth" /></td>
+            </tr>
+            <tr>
+                <td>Client Secret</td>
+                <td><input type="password" id="clientSecret" @bind="_azureRequestModel.ClientSecret" style="width:400px;" /></td>
+            </tr>
+            <tr>
+                <td>Tenant ID</td>
+                <td><InputText id="tenantId" @bind-Value="_azureRequestModel.TenantId" @bind-style="_inputWidth" /></td>
+            </tr>
+            <tr>
+                <td>Calendar ID</td>
+                <td><InputText id="calendarId" @bind-Value="_azureRequestModel.CalendarId" @bind-style="_inputWidth" /></td>
+            </tr>
+            <tr>
+                <td>Calendar ID</td>
+                <td><InputNumber id="calendarId" @bind-Value="_azureRequestModel.Minutes" @bind-style="_inputWidth" /></td>
+            </tr>
+        </tbody>
+    </table>
 
     <button type="submit">Submit</button>
 </EditForm>
 
+    @if (_events == null)
+    {
+        <p><em>No events found yet...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Start</th>
+                    <th>End</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var foundEvent in _events)
+                {
+                    <tr>
+                        <td>@foundEvent.Subject</td>
+                        <td>@foundEvent.BeginTimestamp.ToDateTime().ToLocalTime().ToString("g")</td>
+                        <td>@foundEvent.EndTimestamp.ToDateTime().ToLocalTime().ToString("g")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+
+
 @code {
     private AzureRequestModel _azureRequestModel = new AzureRequestModel();
+    private IEnumerable<AzureReplyEvent> _events;
+    private string _inputWidth = "width:400px;";
 
-    private void HandleValidSubmit()
+    private async void HandleValidSubmit()
     {
-        Console.WriteLine("OnValidSubmit");
+        _events = await AzrueService.ReadCalendarEventsFor(_azureRequestModel);
     }
 }
