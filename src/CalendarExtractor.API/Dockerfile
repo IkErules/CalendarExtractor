@@ -6,10 +6,10 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["src/CalendarExtractor.API/CalendarExtractor.API.csproj", "src/CalendarExtractor.API/"]
-RUN dotnet restore "src/CalendarExtractor.API/CalendarExtractor.API.csproj"
+COPY ["CalendarExtractor.API.csproj", ""]
+RUN dotnet restore "CalendarExtractor.API.csproj"
 COPY . .
-WORKDIR "/src/src/CalendarExtractor.API"
+WORKDIR "/src/"
 RUN dotnet build "CalendarExtractor.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
