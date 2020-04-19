@@ -11,8 +11,6 @@ namespace CalendarExtractor.Web.Client.Data
 {
     public class AzureService
     {
-        private const string ServerAddress = "http://localhost:5000";
-
         public async Task<IEnumerable<AzureReplyEvent>> ReadCalendarEventsFor(AzureRequestModel azureRequest)
         {
             var calendar = CreateCalendar(azureRequest.Minutes, azureRequest.CalendarId);
@@ -24,7 +22,10 @@ namespace CalendarExtractor.Web.Client.Data
             AppContext.SetSwitch(
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
-            using var channel = GrpcChannel.ForAddress(ServerAddress);
+            var serverAddress = Environment.GetEnvironmentVariable("API_URL") ?? "test";
+            Console.WriteLine($"Environment Variable API URL: {serverAddress}");
+
+            using var channel = GrpcChannel.ForAddress(serverAddress);
             var azureClient = new Azure.AzureClient(channel);
 
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
@@ -59,7 +60,7 @@ namespace CalendarExtractor.Web.Client.Data
 
         private AzureRequest.Types.Calendar CreateCalendar(int minutes, string calendarId)
         {
-            var startTime = DateTime.Now;
+            var startTime = DateTime.Now.ToLocalTime();
             var endTime = startTime.AddMinutes(minutes);
 
             Console.WriteLine("Beginn Abfrage: " + startTime.ToString("g"));

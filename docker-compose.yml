@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+    calendar-api:
+        image: calendar-api:dev
+        container_name: calendar-api
+        build: 
+            context: ./src/CalendarExtractor.API/
+        ports:
+            - "5000:80"
+        environment: 
+            - ASPNETCORE_URLS=http://+
+        networks:
+            - calendar-network
+
+    calendar-client:    
+        image: calendar-client:dev
+        container_name: calendar-client
+        build: 
+            context: ./src/CalendarExtractor.Web.Client/
+        ports:
+            - "8080:80"
+        networks:
+            - calendar-network
+        environment:
+            - API_URL=http://calendar-api:80
+        depends_on:
+            - calendar-api
+  
+networks:
+    calendar-network:
+        external: true
