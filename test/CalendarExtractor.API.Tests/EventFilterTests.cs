@@ -2,13 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using CalendarExtractor.API.Helper;
+using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
+using Moq;
 using Xunit;
+using IAuthenticationProvider = Microsoft.Graph.IAuthenticationProvider;
 
 namespace CalendarExtractor.API.Tests
 {
     public class EventFilterTests
     {
+        private readonly GraphCalendarHelper _graphCalendarHelper;
+
+        public EventFilterTests()
+        {
+            var logger = new Mock<ILogger>().Object;
+            var authenticationProvider = new Mock<IAuthenticationProvider>().Object;
+            _graphCalendarHelper = new GraphCalendarHelper(authenticationProvider, logger);
+        }
+
         [Fact]
         public void FilterEvents_NoMatch()
         {
@@ -20,8 +32,8 @@ namespace CalendarExtractor.API.Tests
             var filterTimeEnd = filterTimeStart.AddHours(1);
 
             // when
-            var eventFilter = new EventFilter(graphEvents);
-            var actualFilteredEvents = eventFilter.FilterEventsFor(filterTimeStart, filterTimeEnd);
+            var actualFilteredEvents = _graphCalendarHelper
+                .FilterEventsFor(graphEvents, filterTimeStart, filterTimeEnd);
 
             // then
             Assert.Empty(actualFilteredEvents);
@@ -38,9 +50,8 @@ namespace CalendarExtractor.API.Tests
             var filterTimeEnd = filterTimeStart.AddMinutes(20);
 
             // when
-            var eventFilter = new EventFilter(new List<Event> { expectedGraphEvent });
-            var actualFilteredEvents = eventFilter.FilterEventsFor(filterTimeStart, filterTimeEnd);
-
+            var actualFilteredEvents = _graphCalendarHelper
+                .FilterEventsFor(new List<Event> { expectedGraphEvent }, filterTimeStart, filterTimeEnd);
             // then
             Assert.True(actualFilteredEvents.Count() == 1);
             var actualFilteredEvent = actualFilteredEvents.SingleOrDefault();
@@ -59,8 +70,8 @@ namespace CalendarExtractor.API.Tests
             var filterTimeEnd = filterTimeStart.AddMinutes(80);
 
             // when
-            var eventFilter = new EventFilter(new List<Event> { expectedGraphEvent, secondGraphEvent });
-            var actualFilteredEvents = eventFilter.FilterEventsFor(filterTimeStart, filterTimeEnd);
+            var actualFilteredEvents = _graphCalendarHelper
+                .FilterEventsFor(new List<Event> { expectedGraphEvent, secondGraphEvent }, filterTimeStart, filterTimeEnd);
 
             // then
             Assert.True(actualFilteredEvents.Count() == 1);
@@ -80,8 +91,8 @@ namespace CalendarExtractor.API.Tests
             var filterTimeEnd = filterTimeStart.AddHours(3);
 
             // when
-            var eventFilter = new EventFilter(new List<Event> { expectedGraphEvent, expectedSecondGraphEvent });
-            var actualFilteredEvents = eventFilter.FilterEventsFor(filterTimeStart, filterTimeEnd);
+            var actualFilteredEvents = _graphCalendarHelper
+                .FilterEventsFor(new List<Event> { expectedGraphEvent, expectedSecondGraphEvent }, filterTimeStart, filterTimeEnd);
 
             // then
             Assert.True(actualFilteredEvents.Count() == 2);
@@ -100,8 +111,8 @@ namespace CalendarExtractor.API.Tests
             var filterDateTime = DateTimeOffset.Now.AddMinutes(60);
 
             // when
-            var eventFilter = new EventFilter(new List<Event> { expectedGraphEvent, secondGraphEvent });
-            var actualFilteredEvents = eventFilter.FilterEventsFor(filterDateTime, filterDateTime);
+            var actualFilteredEvents = _graphCalendarHelper
+                .FilterEventsFor(new List<Event> { expectedGraphEvent, secondGraphEvent }, filterDateTime, filterDateTime);
 
             // then
             Assert.True(actualFilteredEvents.Count() == 1);

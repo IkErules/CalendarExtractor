@@ -24,14 +24,15 @@ namespace CalendarExtractor.API.Services
             _requestValidator = requestValidator;
         }
 
-        public override async Task GetCalendarInformation(AzureRequest request, IServerStreamWriter<AzureReplyEvent> responseStream, ServerCallContext context)
+        public override async Task GetCalendarInformation(AzureRequest request, IServerStreamWriter<AzureReplyEvent> responseStream,
+            ServerCallContext context)
         {
-            _logger.LogInformation($"Get Request for {request.Calendar.CalendarId}");
+            _logger.LogInformation($"GetCalendarInformation request for {request.Calendar.CalendarId}");
 
             _requestValidator.Validate(request);
 
             var graphCalendarClient = CreateGraphCalendarClient(request.Client);
-            var graphEvents = ListCalendarEventsFor(request.Calendar, graphCalendarClient);
+            var graphEvents = graphCalendarClient.GetEventsAsync(request.Calendar).Result;
             var azureReplyEvents = CreateReplyEventsOf(graphEvents);
 
             _logger.LogInformation($"Sending response for request {request}");
@@ -43,6 +44,7 @@ namespace CalendarExtractor.API.Services
             }
         }
 
+        /// TODO: Delete before finish proj
         public override async Task TestGetCalendarInformation(AzureRequest request, IServerStreamWriter<AzureReplyEvent> responseStream, 
             ServerCallContext context)
         {
@@ -51,7 +53,7 @@ namespace CalendarExtractor.API.Services
             _requestValidator.Validate(request);
 
             var graphCalendarClient = CreateGraphCalendarClient(request.Client);
-            var graphEvents = ListCalendarEventsFor(request.Calendar, graphCalendarClient);
+            var graphEvents = graphCalendarClient.GetEventsAsync(request.Calendar).Result;
             var azureReplyEvents = CreateTestReplyEventsOf(graphEvents);
 
             _logger.LogInformation($"Sending response for request {request}");
@@ -68,24 +70,7 @@ namespace CalendarExtractor.API.Services
             var authority = string.Join('/', BaseAuthorityUrl, client.TenantId);
             var authProvider = new DeviceCodeAuthProvider(client.ClientId, client.ClientSecret, authority);
             
-            return new GraphCalendarHelper(authProvider);
-        }
-
-        private IEnumerable<Event> ListCalendarEventsFor(AzureRequest.Types.Calendar calendar, GraphCalendarHelper graphCalendarHelper)
-        {
-            var events = graphCalendarHelper.GetEventsAsync(calendar).Result;
-            return FilterEventsWithStartAndEndTimeOf(calendar, events);
-        }
-
-        private IEnumerable<Event> FilterEventsWithStartAndEndTimeOf(AzureRequest.Types.Calendar calendar, IEnumerable<Event> events)
-        {
-            DateTimeOffset startTime = calendar.BeginTimestamp.ToDateTime().ToLocalTime();
-            DateTimeOffset endTime = calendar.EndTimestamp.ToDateTime().ToLocalTime();
-
-            _logger.LogInformation($"Filter events for sent startTime: {startTime} and endTime {endTime}");
-
-            var eventFilter = new EventFilter(events);
-            return eventFilter.FilterEventsFor(startTime, endTime);
+            return new GraphCalendarHelper(authProvider, _logger);
         }
 
         private IEnumerable<AzureReplyEvent> CreateReplyEventsOf(IEnumerable<Event> graphEvents)
@@ -100,6 +85,7 @@ namespace CalendarExtractor.API.Services
                 });
         }
 
+        /// TODO: Delete before finish proj
         private IEnumerable<AzureReplyEvent> CreateTestReplyEventsOf(IEnumerable<Event> graphEvents)
         {
             return graphEvents
