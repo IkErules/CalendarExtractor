@@ -40,16 +40,29 @@ namespace CalendarExtractor.API.Helper
                     .Filter($"{SearchTermStart} gt '{startFilter}' and {SearchTermStart} lt '{endFilter}'" +
                             $"or {SearchTermEnd} gt '{startFilter}' and {SearchTermEnd} lt '{endFilter}'" +
                             $"or {SearchTermStart} lt '{startFilter}' and {SearchTermEnd} gt '{endFilter}'")
-                    .OrderBy("createdDateTime DESC")
                     .GetAsync();
-                
-                return resultPage.CurrentPage;
+
+                return GetAllEventsBasedOnPage(resultPage);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error getting events for calendarId {calendar.CalendarId}: {ex.Message}");
                 throw new RpcException(new Status(StatusCode.Internal, $"Error while reading event: {ex.Message}"));
             }
+        }
+
+        private IEnumerable<Event> GetAllEventsBasedOnPage(IUserEventsCollectionPage resultPage)
+        {
+            var allEvents = new List<Event>();
+            do
+            {
+                var eventsOfCurrentPage = resultPage.CurrentPage.ToList();
+                allEvents.AddRange(eventsOfCurrentPage);
+
+                resultPage = resultPage.NextPageRequest?.GetAsync().Result;
+            } while (resultPage != null);
+
+            return allEvents;
         }
 
         /// <summary>

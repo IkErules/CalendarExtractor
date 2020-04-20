@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +31,7 @@ namespace CalendarExtractor.API.Services
             _requestValidator.Validate(request);
 
             var graphCalendarClient = CreateGraphCalendarClient(request.Client);
-            var graphEvents = graphCalendarClient.GetEventsAsync(request.Calendar).Result;
+            var graphEvents = await graphCalendarClient.GetEventsAsync(request.Calendar);
             var azureReplyEvents = CreateReplyEventsOf(graphEvents);
 
             _logger.LogInformation($"Sending response for request {request}");
