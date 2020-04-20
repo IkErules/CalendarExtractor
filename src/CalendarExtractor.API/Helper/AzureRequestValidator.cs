@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +20,7 @@ namespace CalendarExtractor.API.Helper
             _logger = logger;
         }
 
-        public bool Validate(AzureRequest request)
+        public bool Validate(calendar_information_request request)
         {
             ValidateEmptyString(request);
             ValidateValidGuid(request);
@@ -31,7 +30,7 @@ namespace CalendarExtractor.API.Helper
             return true;
         }
 
-        private void ValidateValidTimestamps(AzureRequest request)
+        private void ValidateValidTimestamps(calendar_information_request request)
         {
             if (request.Calendar.EndTimestamp < request.Calendar.BeginTimestamp)
                 _errors.Add(new Metadata.Entry("Timestamps", NotValidTimestampsErrorMessage));
@@ -44,7 +43,7 @@ namespace CalendarExtractor.API.Helper
             }
         }
 
-        private void ValidateNotNullTimestamps(AzureRequest request)
+        private void ValidateNotNullTimestamps(calendar_information_request request)
         {
             if (request.Calendar.BeginTimestamp == null)
                 _errors.Add(new Metadata.Entry("BeginTimestamp", NotNullErrorMessage));
@@ -60,7 +59,7 @@ namespace CalendarExtractor.API.Helper
             }
         }
 
-        private void ValidateValidGuid(AzureRequest request)
+        private void ValidateValidGuid(calendar_information_request request)
         {
             if (!IsValidGuid(request.Client.ClientId))
                 _errors.Add(new Metadata.Entry("ClientId", NoValidGuidErrorErrorMessage));
@@ -82,7 +81,7 @@ namespace CalendarExtractor.API.Helper
             return Guid.TryParse(toValidate, out _);
         }
 
-        private void ValidateEmptyString(AzureRequest request)
+        private void ValidateEmptyString(calendar_information_request request)
         {
             if (string.IsNullOrEmpty(request.Client?.ClientId))
                 _errors.Add(new Metadata.Entry("ClientId", EmptyStringMessage));

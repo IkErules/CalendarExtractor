@@ -11,10 +11,10 @@ namespace CalendarExtractor.Web.Client.Data
 {
     public class AzureService
     {
-        public async Task<IEnumerable<AzureReplyEvent>> ReadCalendarEventsFor(AzureRequestModel azureRequest)
+        public async Task<IEnumerable<calendar_information_reply>> ReadCalendarEventsFor(AzureRequestModel azureRequest)
         {
             var calendar = CreateCalendar(azureRequest.Minutes, azureRequest.CalendarId);
-            if (calendar == null) return new List<AzureReplyEvent>();
+            if (calendar == null) return new List<calendar_information_reply>();
 
             var request = CreateAzureRequest(calendar, azureRequest);
 
@@ -30,13 +30,13 @@ namespace CalendarExtractor.Web.Client.Data
 
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 
-            using var streamingCall = azureClient.GetCalendarInformation(request, cancellationToken: cts.Token);
+            using var streamingCall = azureClient.get_calendar_information(request, cancellationToken: cts.Token);
 
             //using var streamingCall = isTest
             //    ? azureClient.TestGetCalendarInformation(request, cancellationToken: cts.Token)
             //    : azureClient.GetCalendarInformation(request, cancellationToken: cts.Token);
 
-            var replyEventList = new List<AzureReplyEvent>();
+            var replyEventList = new List<calendar_information_reply>();
 
             try
             {
@@ -58,7 +58,7 @@ namespace CalendarExtractor.Web.Client.Data
             return replyEventList;
         }
 
-        private AzureRequest.Types.Calendar CreateCalendar(int minutes, string calendarId)
+        private calendar_information_request.Types.Calendar CreateCalendar(int minutes, string calendarId)
         {
             var startTime = DateTime.Now.ToLocalTime();
             var endTime = startTime.AddMinutes(minutes);
@@ -66,7 +66,7 @@ namespace CalendarExtractor.Web.Client.Data
             Console.WriteLine("Beginn Abfrage: " + startTime.ToString("g"));
             Console.WriteLine("Ende Abfrage: " + endTime.ToString("g"));
 
-            return new AzureRequest.Types.Calendar
+            return new calendar_information_request.Types.Calendar
             {
                 CalendarId = calendarId,
                 BeginTimestamp = CreateTimestampOf(startTime),
@@ -74,12 +74,12 @@ namespace CalendarExtractor.Web.Client.Data
             };
         }
         
-        private AzureRequest CreateAzureRequest(AzureRequest.Types.Calendar calendar, AzureRequestModel model)
+        private calendar_information_request CreateAzureRequest(calendar_information_request.Types.Calendar calendar, AzureRequestModel model)
         {
 
-            return new AzureRequest
+            return new calendar_information_request
             {
-                Client = new AzureRequest.Types.Client
+                Client = new calendar_information_request.Types.Client
                 {
                     ClientId = model.ClientId,
                     ClientSecret = model.ClientSecret,

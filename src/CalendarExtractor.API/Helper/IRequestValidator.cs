@@ -2,6 +2,6 @@
 {
     public interface IRequestValidator
     {
-        bool Validate(AzureRequest request);
+        bool Validate(calendar_information_request request);
     }
 }

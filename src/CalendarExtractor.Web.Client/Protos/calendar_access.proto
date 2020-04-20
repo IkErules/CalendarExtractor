@@ -7,18 +7,18 @@ option csharp_namespace = "CalendarExtractor.API";
 package calendar_access;
 
 service calendar_access {
-	rpc GetCalendarInformation (AzureRequest) returns (stream AzureReplyEvent);
-	rpc TestGetCalendarInformation (AzureRequest) returns (stream AzureReplyEvent);
+	rpc get_calendar_information (calendar_information_request) returns (stream calendar_information_reply);
+	rpc test_get_calendar_information (calendar_information_request) returns (stream calendar_information_reply);
 }
 
-message AzureRequest {
+message calendar_information_request {
 	message Client {
-		string clientId = 1;
-		string clientSecret = 2;
-		string tenantId = 3;
+		string client_id = 1;
+		string client_secret = 2;
+		string tenant_id = 3;
 	}
 	message Calendar {
-		string calendarId = 1;
+		string calendar_id = 1;
 		google.protobuf.Timestamp beginTimestamp = 2;
 		google.protobuf.Timestamp endTimestamp = 3;
 	}
@@ -26,7 +26,7 @@ message AzureRequest {
 	Calendar calendar = 2;
 }
 
-message AzureReplyEvent {
+message calendar_information_reply {
 	string subject = 1;
 	google.protobuf.Timestamp beginTimestamp = 2;
 	google.protobuf.Timestamp endTimestamp = 3;

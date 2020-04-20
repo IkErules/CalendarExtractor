@@ -22,14 +22,14 @@ namespace CalendarExtractor.API.Tests
         public void Validate_EmptyParams_ThrowsError()
         {
             // given
-            var request = new AzureRequest
+            var request = new calendar_information_request
             {
-                Client = new AzureRequest.Types.Client
+                Client = new calendar_information_request.Types.Client
                 {
                     ClientId = string.Empty,
                     TenantId = string.Empty,
                 },
-                Calendar = new AzureRequest.Types.Calendar
+                Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = string.Empty,
                     BeginTimestamp = CreateTimestampOf(DateTime.Now),
@@ -51,15 +51,15 @@ namespace CalendarExtractor.API.Tests
             // given
             var invalidGuidString = "816c3a23-7568-40a1-b12-c65795fcbd";
 
-            var request = new AzureRequest
+            var request = new calendar_information_request
             {
-                Client = new AzureRequest.Types.Client
+                Client = new calendar_information_request.Types.Client
                 {
                     ClientId = invalidGuidString,
                     ClientSecret = "mySecret",
                     TenantId = ValidGuidString,
                 },
-                Calendar = new AzureRequest.Types.Calendar
+                Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
                     BeginTimestamp = CreateTimestampOf(DateTime.Now),
@@ -79,9 +79,9 @@ namespace CalendarExtractor.API.Tests
         public void Validate_NoClientSent_ThrowsError()
         {
             // given
-            var request = new AzureRequest
+            var request = new calendar_information_request
             {
-                Calendar = new AzureRequest.Types.Calendar
+                Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
                     BeginTimestamp = CreateTimestampOf(DateTime.Now),
@@ -101,15 +101,15 @@ namespace CalendarExtractor.API.Tests
         public void Validate_NoErrorsFound()
         {
             // given
-            var request = new AzureRequest
+            var request = new calendar_information_request
             {
-                Client = new AzureRequest.Types.Client
+                Client = new calendar_information_request.Types.Client
                 {
                     ClientId = ValidGuidString,
                     ClientSecret = "mySecret",
                     TenantId = ValidGuidString,
                 },
-                Calendar = new AzureRequest.Types.Calendar
+                Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
                     BeginTimestamp = CreateTimestampOf(DateTime.Now),
@@ -128,15 +128,15 @@ namespace CalendarExtractor.API.Tests
         public void Validate_NullTimestamps_ThrowsException()
         {
             // given
-            var request = new AzureRequest
+            var request = new calendar_information_request
             {
-                Client = new AzureRequest.Types.Client
+                Client = new calendar_information_request.Types.Client
                 {
                     ClientId = ValidGuidString,
                     ClientSecret = "mySecret",
                     TenantId = ValidGuidString,
                 },
-                Calendar = new AzureRequest.Types.Calendar
+                Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
                     EndTimestamp = null
@@ -155,15 +155,15 @@ namespace CalendarExtractor.API.Tests
         public void Validate_EndBeforeBeginTimestamps_ThrowsError()
         {
             // given
-            var request = new AzureRequest
+            var request = new calendar_information_request
             {
-                Client = new AzureRequest.Types.Client
+                Client = new calendar_information_request.Types.Client
                 {
                     ClientId = ValidGuidString,
                     ClientSecret = "mySecret",
                     TenantId = ValidGuidString,
                 },
-                Calendar = new AzureRequest.Types.Calendar
+                Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
                     BeginTimestamp = CreateTimestampOf(DateTime.Now),
@@ -184,15 +184,15 @@ namespace CalendarExtractor.API.Tests
         {
             // given
             var timestamp = CreateTimestampOf(DateTime.Now);
-            var request = new AzureRequest
+            var request = new calendar_information_request
             {
-                Client = new AzureRequest.Types.Client
+                Client = new calendar_information_request.Types.Client
                 {
                     ClientId = ValidGuidString,
                     ClientSecret = "mySecret",
                     TenantId = ValidGuidString,
                 },
-                Calendar = new AzureRequest.Types.Calendar
+                Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
                     BeginTimestamp = timestamp,
