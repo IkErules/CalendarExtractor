@@ -26,7 +26,7 @@ namespace CalendarExtractor.Web.Client.Data
             Console.WriteLine($"Environment Variable API URL: {serverAddress}");
 
             using var channel = GrpcChannel.ForAddress(serverAddress);
-            var azureClient = new Azure.AzureClient(channel);
+            var azureClient = new calendar_access.calendar_accessClient(channel);
 
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 

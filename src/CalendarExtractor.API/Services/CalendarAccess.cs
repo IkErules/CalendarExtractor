@@ -11,13 +11,13 @@ using static CalendarExtractor.API.Helper.DateTimeOffsetFormatter;
 
 namespace CalendarExtractor.API.Services
 {
-    public class AzureService : Azure.AzureBase
+    public class CalendarAccess : calendar_access.calendar_accessBase
     {
-        private readonly ILogger<AzureService> _logger;
+        private readonly ILogger<CalendarAccess> _logger;
         private readonly IRequestValidator _requestValidator;
         private const string BaseAuthorityUrl = "https://login.microsoftonline.com";
 
-        public AzureService(ILogger<AzureService> logger, IRequestValidator requestValidator)
+        public CalendarAccess(ILogger<CalendarAccess> logger, IRequestValidator requestValidator)
         {
             _logger = logger;
             _requestValidator = requestValidator;

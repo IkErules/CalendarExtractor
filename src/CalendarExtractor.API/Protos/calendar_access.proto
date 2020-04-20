@@ -4,9 +4,9 @@ import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "CalendarExtractor.API";
 
-package azure;
+package calendar_access;
 
-service Azure {
+service calendar_access {
 	rpc GetCalendarInformation (AzureRequest) returns (stream AzureReplyEvent);
 	rpc TestGetCalendarInformation (AzureRequest) returns (stream AzureReplyEvent);
 }
