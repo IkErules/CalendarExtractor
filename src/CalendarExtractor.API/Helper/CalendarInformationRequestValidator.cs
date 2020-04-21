@@ -5,16 +5,16 @@ using Microsoft.Extensions.Logging;
 
 namespace CalendarExtractor.API.Helper
 {
-    public class AzureRequestValidator : IRequestValidator
+    public class CalendarInformationRequestValidator : IRequestValidator
     {
         private const string EmptyStringMessage = "must not be empty";
         private const string NoValidGuidErrorErrorMessage = "is not a valid GUID";
         private const string NotValidTimeErrorMessage = "not valid start_time and end_time";
 
         private readonly Metadata _errors = new Metadata();
-        private ILogger<AzureRequestValidator> _logger;
+        private ILogger<CalendarInformationRequestValidator> _logger;
 
-        public AzureRequestValidator(ILogger<AzureRequestValidator> logger)
+        public CalendarInformationRequestValidator(ILogger<CalendarInformationRequestValidator> logger)
         {
             _logger = logger;
         }

@@ -15,7 +15,7 @@ namespace CalendarExtractor.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGrpc();
-            services.AddTransient<IRequestValidator, AzureRequestValidator>();
+            services.AddTransient<IRequestValidator, CalendarInformationRequestValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

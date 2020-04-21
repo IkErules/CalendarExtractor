@@ -7,14 +7,14 @@ using Xunit;
 
 namespace CalendarExtractor.API.Tests
 {
-    public class AzureRequestValidatorTests
+    public class CalendarInformationRequestValidatorTests
     {
         private const string ValidGuidString = "816c3a23-7568-40a1-b12a-c65795fcbd92";
-        private ILogger<AzureRequestValidator> _logger;
+        private ILogger<CalendarInformationRequestValidator> _logger;
 
-        public AzureRequestValidatorTests()
+        public CalendarInformationRequestValidatorTests()
         {
-            _logger = new Mock<ILogger<AzureRequestValidator>>().Object;
+            _logger = new Mock<ILogger<CalendarInformationRequestValidator>>().Object;
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
+            var ex = Assert.Throws<RpcException>(() => new CalendarInformationRequestValidator(_logger).Validate(request));
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
@@ -67,7 +67,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
+            var ex = Assert.Throws<RpcException>(() => new CalendarInformationRequestValidator(_logger).Validate(request));
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
@@ -89,7 +89,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
+            var ex = Assert.Throws<RpcException>(() => new CalendarInformationRequestValidator(_logger).Validate(request));
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
@@ -111,7 +111,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
+            var ex = Assert.Throws<RpcException>(() => new CalendarInformationRequestValidator(_logger).Validate(request));
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
@@ -139,7 +139,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var actualRequestIsValid = new AzureRequestValidator(_logger).Validate(request);
+            var actualRequestIsValid = new CalendarInformationRequestValidator(_logger).Validate(request);
 
             // then
             Assert.True(actualRequestIsValid);
@@ -164,7 +164,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
+            var ex = Assert.Throws<RpcException>(() => new CalendarInformationRequestValidator(_logger).Validate(request));
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
@@ -192,7 +192,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
+            var ex = Assert.Throws<RpcException>(() => new CalendarInformationRequestValidator(_logger).Validate(request));
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
@@ -221,7 +221,7 @@ namespace CalendarExtractor.API.Tests
             };
 
             // when
-            var actualValid = new AzureRequestValidator(_logger).Validate(request);
+            var actualValid = new CalendarInformationRequestValidator(_logger).Validate(request);
 
             // then
             Assert.True(actualValid);
