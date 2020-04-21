@@ -10,7 +10,7 @@ namespace CalendarExtractor.API.Helper
         private const string EmptyStringMessage = "must not be empty";
         private const string NoValidGuidErrorErrorMessage = "is not a valid GUID";
         private const string NotNullErrorMessage = "must not be null";
-        private const string NotValidTimestampsErrorMessage = "endTimestamp must be not before beginTimestamp";
+        private const string NotValidTimestampsErrorMessage = "end_time must be not before begin_time";
 
         private readonly Metadata _errors = new Metadata();
         private ILogger<AzureRequestValidator> _logger;
@@ -32,7 +32,7 @@ namespace CalendarExtractor.API.Helper
 
         private void ValidateValidTimestamps(calendar_information_request request)
         {
-            if (request.Calendar.EndTimestamp < request.Calendar.BeginTimestamp)
+            if (request.Calendar.EndTime < request.Calendar.BeginTime)
                 _errors.Add(new Metadata.Entry("Timestamps", NotValidTimestampsErrorMessage));
 
             if (_errors.Any())
@@ -45,11 +45,11 @@ namespace CalendarExtractor.API.Helper
 
         private void ValidateNotNullTimestamps(calendar_information_request request)
         {
-            if (request.Calendar.BeginTimestamp == null)
-                _errors.Add(new Metadata.Entry("BeginTimestamp", NotNullErrorMessage));
+            if (request.Calendar.BeginTime == null)
+                _errors.Add(new Metadata.Entry("BeginTime", NotNullErrorMessage));
 
-            if (request.Calendar.EndTimestamp == null)
-                _errors.Add(new Metadata.Entry("EndTImestamp", NotNullErrorMessage));
+            if (request.Calendar.EndTime == null)
+                _errors.Add(new Metadata.Entry("EndTime", NotNullErrorMessage));
 
             if (_errors.Any())
             {

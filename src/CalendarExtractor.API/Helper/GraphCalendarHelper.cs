@@ -28,8 +28,8 @@ namespace CalendarExtractor.API.Helper
         {
             try
             {
-                var startFilter = calendar.BeginTimestamp.ToDateTime().ToString("o");
-                var endFilter = calendar.EndTimestamp.ToDateTime().ToString("o");
+                var startFilter = calendar.BeginTime.ToDateTime().ToString("o");
+                var endFilter = calendar.EndTime.ToDateTime().ToString("o");
 
                 _logger.LogInformation($"Start filter datetime: {startFilter}");
                 _logger.LogInformation($"End filter dateTime {endFilter}");

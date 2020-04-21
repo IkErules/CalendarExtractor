@@ -79,8 +79,8 @@ namespace CalendarExtractor.API.Services
                 .Select(e => new calendar_information_reply
                 {
                     Subject = e.Subject,
-                    BeginTimestamp = FormatDateTimeTimeZoneToLocal(e.Start).ToTimestamp(),
-                    EndTimestamp = FormatDateTimeTimeZoneToLocal(e.End).ToTimestamp()
+                    BeginTime = FormatDateTimeTimeZoneToLocal(e.Start).ToTimestamp(),
+                    EndTime = FormatDateTimeTimeZoneToLocal(e.End).ToTimestamp()
                 });
         }
 
@@ -105,8 +105,8 @@ namespace CalendarExtractor.API.Services
                     return new calendar_information_reply
                     {
                         Subject = builder.ToString(),
-                        BeginTimestamp = FormatDateTimeTimeZoneToLocal(e.Start).ToTimestamp(),
-                        EndTimestamp = FormatDateTimeTimeZoneToLocal(e.End).ToTimestamp()
+                        BeginTime = FormatDateTimeTimeZoneToLocal(e.Start).ToTimestamp(),
+                        EndTime = FormatDateTimeTimeZoneToLocal(e.End).ToTimestamp()
                     };
                 });
         }

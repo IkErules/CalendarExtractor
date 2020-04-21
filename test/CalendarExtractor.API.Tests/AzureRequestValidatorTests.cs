@@ -32,8 +32,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = string.Empty,
-                    BeginTimestamp = CreateTimestampOf(DateTime.Now),
-                    EndTimestamp = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTime = CreateTimestampOf(DateTime.Now),
+                    EndTime = CreateTimestampOf(DateTime.Now.AddDays(10))
                 }
             };
 
@@ -62,8 +62,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginTimestamp = CreateTimestampOf(DateTime.Now),
-                    EndTimestamp = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTime = CreateTimestampOf(DateTime.Now),
+                    EndTime = CreateTimestampOf(DateTime.Now.AddDays(10))
                 }
             };
 
@@ -84,8 +84,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginTimestamp = CreateTimestampOf(DateTime.Now),
-                    EndTimestamp = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTime = CreateTimestampOf(DateTime.Now),
+                    EndTime = CreateTimestampOf(DateTime.Now.AddDays(10))
                 }
             };
 
@@ -112,8 +112,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginTimestamp = CreateTimestampOf(DateTime.Now),
-                    EndTimestamp = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTime = CreateTimestampOf(DateTime.Now),
+                    EndTime = CreateTimestampOf(DateTime.Now.AddDays(10))
                 }
             };
 
@@ -139,7 +139,7 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    EndTimestamp = null
+                    EndTime = null
                 }
             };
 
@@ -148,7 +148,7 @@ namespace CalendarExtractor.API.Tests
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
-            Assert.Contains("begintimestamp, endtimestamp must not be null", ex.Message);
+            Assert.Contains("BeginTime, EndTime must not be null", ex.Message);
         }
 
         [Fact]
@@ -166,8 +166,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginTimestamp = CreateTimestampOf(DateTime.Now),
-                    EndTimestamp = CreateTimestampOf(DateTime.Now.AddSeconds(-5))
+                    BeginTime = CreateTimestampOf(DateTime.Now),
+                    EndTime = CreateTimestampOf(DateTime.Now.AddSeconds(-5))
                 }
             };
 
@@ -176,7 +176,7 @@ namespace CalendarExtractor.API.Tests
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
-            Assert.Contains("timestamps endTimestamp must be not before beginTimestamp", ex.Message);
+            Assert.Contains("timestamps EndTime must be not before BeginTime", ex.Message);
         }
 
         [Fact]
@@ -195,8 +195,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginTimestamp = timestamp,
-                    EndTimestamp = timestamp
+                    BeginTime = timestamp,
+                    EndTime = timestamp
                 }
             };
 
