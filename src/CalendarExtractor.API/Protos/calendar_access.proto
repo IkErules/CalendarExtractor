@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "google/protobuf/timestamp.proto";
-
 option csharp_namespace = "CalendarExtractor.API";
 
 package calendar_access;
@@ -19,8 +17,8 @@ message calendar_information_request {
 	}
 	message Calendar {
 		string calendar_id = 1;
-		google.protobuf.Timestamp begin_time = 2;
-		google.protobuf.Timestamp end_time = 3;
+		int64 begin_time = 2;
+		int64 end_time = 3;
 	}
 	Client client = 1;
 	Calendar calendar = 2;
@@ -28,6 +26,6 @@ message calendar_information_request {
 
 message calendar_information_reply {
 	string subject = 1;
-	google.protobuf.Timestamp begin_time = 2;
-	google.protobuf.Timestamp end_time = 3;
+	int64 begin_time = 2;
+	int64 end_time = 3;
 }

@@ -9,8 +9,7 @@ namespace CalendarExtractor.API.Helper
     {
         private const string EmptyStringMessage = "must not be empty";
         private const string NoValidGuidErrorErrorMessage = "is not a valid GUID";
-        private const string NotNullErrorMessage = "must not be null";
-        private const string NotValidTimestampsErrorMessage = "end_time must be not before begin_time";
+        private const string NotValidTimeErrorMessage = "not valid start_time and end_time";
 
         private readonly Metadata _errors = new Metadata();
         private ILogger<AzureRequestValidator> _logger;
@@ -24,38 +23,24 @@ namespace CalendarExtractor.API.Helper
         {
             ValidateEmptyString(request);
             ValidateValidGuid(request);
-            ValidateNotNullTimestamps(request);
-            ValidateValidTimestamps(request);
+            ValidateValidTime(request);
 
             return true;
         }
 
-        private void ValidateValidTimestamps(calendar_information_request request)
+        private void ValidateValidTime(calendar_information_request request)
         {
             if (request.Calendar.EndTime < request.Calendar.BeginTime)
-                _errors.Add(new Metadata.Entry("Timestamps", NotValidTimestampsErrorMessage));
+                _errors.Add(new Metadata.Entry("Timestamps", NotValidTimeErrorMessage));
+
+            if (request.Calendar.EndTime == 0 || request.Calendar.BeginTime == 0)
+                _errors.Add(new Metadata.Entry("Timestamps", NotValidTimeErrorMessage));
 
             if (_errors.Any())
             {
                 _logger.LogInformation($"Validation Errors: Not valid Timestamps in Request {request}");
                 throw new RpcException(new Status(StatusCode.InvalidArgument, 
-                    $"{GetErrorKeys()} {NotValidTimestampsErrorMessage}"), _errors);
-            }
-        }
-
-        private void ValidateNotNullTimestamps(calendar_information_request request)
-        {
-            if (request.Calendar.BeginTime == null)
-                _errors.Add(new Metadata.Entry("BeginTime", NotNullErrorMessage));
-
-            if (request.Calendar.EndTime == null)
-                _errors.Add(new Metadata.Entry("EndTime", NotNullErrorMessage));
-
-            if (_errors.Any())
-            {
-                _logger.LogInformation($"Validation Errors: Not valid Timestamps in Request {request}");
-                throw new RpcException(new Status(StatusCode.InvalidArgument, 
-                    $"{GetErrorKeys()} {NotNullErrorMessage}"), _errors);
+                    $"{GetErrorKeys()} {NotValidTimeErrorMessage}"), _errors);
             }
         }
 
@@ -73,7 +58,6 @@ namespace CalendarExtractor.API.Helper
                 throw new RpcException(new Status(StatusCode.InvalidArgument, 
                     $"{GetErrorKeys()} {NoValidGuidErrorErrorMessage}"), _errors);
             }
-                
         }
 
         private bool IsValidGuid(string toValidate)

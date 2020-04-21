@@ -1,6 +1,5 @@
 ﻿using System;
 using CalendarExtractor.API.Helper;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -32,8 +31,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = string.Empty,
-                    BeginTime = CreateTimestampOf(DateTime.Now),
-                    EndTime = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTime = CreateUnixTimeOf(DateTime.Now),
+                    EndTime = CreateUnixTimeOf(DateTime.Now.AddDays(10))
                 }
             };
 
@@ -62,8 +61,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginTime = CreateTimestampOf(DateTime.Now),
-                    EndTime = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTime = CreateUnixTimeOf(DateTime.Now),
+                    EndTime = CreateUnixTimeOf(DateTime.Now.AddDays(10))
                 }
             };
 
@@ -84,8 +83,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginTime = CreateTimestampOf(DateTime.Now),
-                    EndTime = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTime = CreateUnixTimeOf(DateTime.Now),
+                    EndTime = CreateUnixTimeOf(DateTime.Now.AddDays(10))
                 }
             };
 
@@ -95,6 +94,28 @@ namespace CalendarExtractor.API.Tests
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
             Assert.Contains("clientid, tenantid, clientsecret must not be empty", ex.Message);
+        }
+
+        [Fact]
+        public void Validate_NoCalendarSent_ThrowsError()
+        {
+            // given
+            var request = new calendar_information_request
+            {
+                Client = new calendar_information_request.Types.Client
+                {
+                    ClientId = ValidGuidString,
+                    ClientSecret = "mySecret",
+                    TenantId = ValidGuidString,
+                }
+            };
+
+            // when
+            var ex = Assert.Throws<RpcException>(() => new AzureRequestValidator(_logger).Validate(request));
+
+            // then
+            Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
+            Assert.Contains("calendarid must not be empty", ex.Message);
         }
 
         [Fact]
@@ -112,8 +133,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginTime = CreateTimestampOf(DateTime.Now),
-                    EndTime = CreateTimestampOf(DateTime.Now.AddDays(10))
+                    BeginTime = CreateUnixTimeOf(DateTime.Now),
+                    EndTime = CreateUnixTimeOf(DateTime.Now.AddDays(10))
                 }
             };
 
@@ -125,7 +146,7 @@ namespace CalendarExtractor.API.Tests
         }
 
         [Fact]
-        public void Validate_NullTimestamps_ThrowsException()
+        public void Validate_DefaultTimeValues_ThrowsException()
         {
             // given
             var request = new calendar_information_request
@@ -138,8 +159,7 @@ namespace CalendarExtractor.API.Tests
                 },
                 Calendar = new calendar_information_request.Types.Calendar
                 {
-                    CalendarId = "myCalendar@microsoft.com",
-                    EndTime = null
+                    CalendarId = "myCalendar@microsoft.com"
                 }
             };
 
@@ -148,7 +168,7 @@ namespace CalendarExtractor.API.Tests
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
-            Assert.Contains("BeginTime, EndTime must not be null", ex.Message);
+            Assert.Contains("timestamps not valid start_time and end_time", ex.Message);
         }
 
         [Fact]
@@ -166,8 +186,8 @@ namespace CalendarExtractor.API.Tests
                 Calendar = new calendar_information_request.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
-                    BeginTime = CreateTimestampOf(DateTime.Now),
-                    EndTime = CreateTimestampOf(DateTime.Now.AddSeconds(-5))
+                    BeginTime = CreateUnixTimeOf(DateTime.Now),
+                    EndTime = CreateUnixTimeOf(DateTime.Now.AddSeconds(-5))
                 }
             };
 
@@ -176,14 +196,14 @@ namespace CalendarExtractor.API.Tests
 
             // then
             Assert.Equal(StatusCode.InvalidArgument, ex.StatusCode);
-            Assert.Contains("timestamps EndTime must be not before BeginTime", ex.Message);
+            Assert.Contains("timestamps not valid start_time and end_time", ex.Message);
         }
 
         [Fact]
         public void Validate_EndEqualToBeginTimestamp_NoError()
         {
             // given
-            var timestamp = CreateTimestampOf(DateTime.Now);
+            var timestamp = CreateUnixTimeOf(DateTime.Now);
             var request = new calendar_information_request
             {
                 Client = new calendar_information_request.Types.Client
@@ -207,11 +227,11 @@ namespace CalendarExtractor.API.Tests
             Assert.True(actualValid);
         }
 
-        private Timestamp CreateTimestampOf(DateTime dateTime)
+        private long CreateUnixTimeOf(DateTime dateTime)
         {
             DateTimeOffset offset = dateTime;
 
-            return offset.ToTimestamp();
+            return offset.ToUnixTimeSeconds();
         }
     }
 }

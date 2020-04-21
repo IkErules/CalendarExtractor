@@ -15,5 +15,15 @@ namespace CalendarExtractor.API.Helper
 
             return dateTimeWithTz;
         }
+
+        public static long FormatDateTimeTimeZoneUnixTime(DateTimeTimeZone value)
+        {
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(value.TimeZone);
+            var dateTime = DateTime.Parse(value.DateTime);
+
+            var dateTimeWithTz = new DateTimeOffset(dateTime, timeZone.BaseUtcOffset).ToUnixTimeSeconds();
+
+            return dateTimeWithTz;
+        }
     }
 }
