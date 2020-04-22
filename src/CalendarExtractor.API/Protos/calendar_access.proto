@@ -6,6 +6,7 @@ package calendar_access;
 
 service calendar_access {
 	rpc get_calendar_information (calendar_information_request) returns (stream calendar_information_reply);
+	rpc get_all_rooms_of_organisation (calendar_information_request) returns (stream room_reply);
 	rpc test_get_calendar_information (calendar_information_request) returns (stream calendar_information_reply);
 }
 
@@ -28,4 +29,9 @@ message calendar_information_reply {
 	string subject = 1;
 	int64 begin_time = 2;
 	int64 end_time = 3;
+}
+
+message room_reply {
+	string name = 1;
+	string room_id = 2;
 }

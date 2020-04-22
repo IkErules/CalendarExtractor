@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CalendarExtractor.API.Helper;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
@@ -43,6 +42,25 @@ namespace CalendarExtractor.API.Services
             }
         }
 
+        public override async Task get_all_rooms_of_organisation(calendar_information_request request, IServerStreamWriter<room_reply> responseStream,
+            ServerCallContext context)
+        {
+            _logger.LogInformation($"GetCalendarInformation request for {request.Calendar.CalendarId}");
+
+            _requestValidator.Validate(request);
+
+            var graphCalendarClient = CreateGraphRoomHelper(request.Client);
+            var allRooms = await graphCalendarClient.GetAllRoomsAsnc(request.Calendar);
+
+            _logger.LogInformation($"Sending response for request {request}");
+
+            foreach (var replyEvent in allRooms)
+            {
+                if (context.CancellationToken.IsCancellationRequested) break;
+                await responseStream.WriteAsync(replyEvent);
+            }
+        }
+
         /// TODO: Delete before finish proj
         public override async Task test_get_calendar_information(calendar_information_request request, IServerStreamWriter<calendar_information_reply> responseStream, 
             ServerCallContext context)
@@ -66,10 +84,23 @@ namespace CalendarExtractor.API.Services
 
         private GraphCalendarHelper CreateGraphCalendarClient(calendar_information_request.Types.Client client)
         {
+            var authProvider = CreateDeviceCodeAuthProvider(client);
+
+            return new GraphCalendarHelper(authProvider, _logger);
+        }
+
+        private GraphRoomHelper CreateGraphRoomHelper(calendar_information_request.Types.Client client)
+        {
+            var authProvider = CreateDeviceCodeAuthProvider(client);
+
+            return new GraphRoomHelper(authProvider, _logger);
+        }
+
+        private static DeviceCodeAuthProvider CreateDeviceCodeAuthProvider(calendar_information_request.Types.Client client)
+        {
             var authority = string.Join('/', BaseAuthorityUrl, client.TenantId);
             var authProvider = new DeviceCodeAuthProvider(client.ClientId, client.ClientSecret, authority);
-            
-            return new GraphCalendarHelper(authProvider, _logger);
+            return authProvider;
         }
 
         private IEnumerable<calendar_information_reply> CreateReplyEventsOf(IEnumerable<Event> graphEvents)

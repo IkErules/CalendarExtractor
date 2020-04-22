@@ -27,7 +27,7 @@ namespace CalendarExtractor.API.Tests
             // given 
             var dateTimeNow = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
             var graphEvents = new List<Event> { CreateGraphEvent(dateTimeNow, 60) };
-            
+
             var filterTimeStart = DateTimeOffset.Now.AddHours(-2);
             var filterTimeEnd = filterTimeStart.AddHours(1);
 
@@ -127,7 +127,7 @@ namespace CalendarExtractor.API.Tests
 
             var startTime = DateTimeTimeZone.FromDateTime(start.DateTime);
             startTime.TimeZone = timeZoneUtc;
-            
+
             var endTime = DateTimeTimeZone.FromDateTime(end.DateTime);
             endTime.TimeZone = timeZoneUtc;
 

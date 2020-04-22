@@ -6,47 +6,80 @@
 
 <h1>Make a simple API call to read calendars of rooms</h1>
 
-<EditForm Model="@_azureRequestModel" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="row">
+    <div class="col-md-8">
+        <EditForm Model="@_azureRequestModel" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <td>Client ID</td>
-                <td><InputText id="clientId" @bind-Value="_azureRequestModel.ClientId" @bind-style="_inputWidth" /></td>
-            </tr>
-            <tr>
-                <td>Client Secret</td>
-                <td><input type="password" id="clientSecret" @bind="_azureRequestModel.ClientSecret" style="width:400px;" /></td>
-            </tr>
-            <tr>
-                <td>Tenant ID</td>
-                <td><InputText id="tenantId" @bind-Value="_azureRequestModel.TenantId" @bind-style="_inputWidth" /></td>
-            </tr>
-            <tr>
-                <td>Calendar ID</td>
-                <td><InputText id="calendarId" @bind-Value="_azureRequestModel.CalendarId" @bind-style="_inputWidth" /></td>
-            </tr>
-            <tr>
-                <td>Start filter</td>
-                <td>
-                    <DatePicker InitialDate="@DateTime.Now" DateSelected="OnStartDateSelected"></DatePicker>
-                    <h6>@_azureRequestModel.StartTime.ToString("g")</h6>
-                </td>
-            </tr>
-            <tr>
-                <td>End filter</td>
-                <td>
-                    <DatePicker InitialDate="@DateTime.Now" DateSelected="OnEndDateSelected"></DatePicker>
-                    <h6>@_azureRequestModel.EndTime.ToString("g")</h6>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+            <table class="table">
+                <tbody>
+                <tr>
+                    <td>Client ID</td>
+                    <td><InputText id="clientId" @bind-Value="_azureRequestModel.ClientId" @bind-style="_inputWidth" /></td>
+                </tr>
+                <tr>
+                    <td>Client Secret</td>
+                    <td><input type="password" id="clientSecret" @bind="_azureRequestModel.ClientSecret" style="width:400px;" /></td>
+                </tr>
+                <tr>
+                    <td>Tenant ID</td>
+                    <td><InputText id="tenantId" @bind-Value="_azureRequestModel.TenantId" @bind-style="_inputWidth" /></td>
+                </tr>
+                <tr>
+                    <td>Calendar ID</td>
+                    <td><InputText id="calendarId" @bind-Value="_azureRequestModel.CalendarId" @bind-style="_inputWidth" /></td>
+                </tr>
+                <tr>
+                    <td>Start filter</td>
+                    <td>
+                        <DatePicker InitialDate="@DateTime.Now" DateSelected="OnStartDateSelected"></DatePicker>
+                        <h6>@_azureRequestModel.StartTime.ToString("g")</h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td>End filter</td>
+                    <td>
+                        <DatePicker InitialDate="@DateTime.Now" DateSelected="OnEndDateSelected"></DatePicker>
+                        <h6>@_azureRequestModel.EndTime.ToString("g")</h6>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
 
-    <button type="submit">Submit</button>
-</EditForm>
+            <button type="submit">Submit</button>
+        </EditForm>
+    </div>
+    <div class="col-md-4">
+        <h3>All available rooms</h3>
+        <button type="button" class="btn btn-info" @onclick="GetAllRooms">Get it!</button>
+        @if (_rooms == null)
+        {
+            <p><em>No rooms found yet...</em></p>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Id</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var room in _rooms)
+                {
+                    <tr>
+                        <td>@room.Name</td>
+                        <td>@room.RoomId</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            }
+    </div>
+</div>
+
 
 @if (_events == null)
 {
@@ -64,13 +97,13 @@ else
         </thead>
         <tbody>
             @foreach (var foundEvent in _events)
-            {
-                <tr>
-                    <td>@foundEvent.Subject</td>
-                    <td>@DateTimeOffset.FromUnixTimeSeconds(foundEvent.BeginTime).LocalDateTime.ToString("g")</td>
-                    <td>@DateTimeOffset.FromUnixTimeSeconds(foundEvent.EndTime).LocalDateTime.ToString("g")</td>
-                </tr>
-            }
+                        {
+            <tr>
+                <td>@foundEvent.Subject</td>
+                <td>@DateTimeOffset.FromUnixTimeSeconds(foundEvent.BeginTime).LocalDateTime.ToString("g")</td>
+                <td>@DateTimeOffset.FromUnixTimeSeconds(foundEvent.EndTime).LocalDateTime.ToString("g")</td>
+            </tr>
+                        }
         </tbody>
     </table>
 }
@@ -79,6 +112,7 @@ else
 @code {
     private AzureRequestModel _azureRequestModel = new AzureRequestModel();
     private IEnumerable<calendar_information_reply> _events;
+    private IEnumerable<room_reply> _rooms;
     private string _inputWidth = "width:400px;";
 
     private async void HandleValidSubmit()
@@ -94,5 +128,10 @@ else
     public void OnEndDateSelected(DateTime dt)
     {
         _azureRequestModel.EndTime = dt;
+    }
+
+    public async Task GetAllRooms()
+    {
+        _rooms = await AzrueService.GetAllRoomsFor(_azureRequestModel);
     }
 }
