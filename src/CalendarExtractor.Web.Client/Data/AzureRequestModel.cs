@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using CalendarExtractor.Web.Client.Data.Validation;
 
 namespace CalendarExtractor.Web.Client.Data
@@ -20,6 +21,9 @@ namespace CalendarExtractor.Web.Client.Data
         public string CalendarId { get; set; } = "meetingroombig@flotha.onmicrosoft.com";
 
         [Required]
-        public int Minutes { get; set; }
+        public DateTime StartTime { get; set; } = DateTime.Now;
+
+        [Required]
+        public DateTime EndTime { get; set; } = DateTime.Now.AddHours(1);
     }
 }

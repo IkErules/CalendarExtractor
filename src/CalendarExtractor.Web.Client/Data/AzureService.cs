@@ -13,7 +13,7 @@ namespace CalendarExtractor.Web.Client.Data
     {
         public async Task<IEnumerable<calendar_information_reply>> ReadCalendarEventsFor(AzureRequestModel azureRequest)
         {
-            var calendar = CreateCalendar(azureRequest.Minutes, azureRequest.CalendarId);
+            var calendar = CreateCalendar(azureRequest);
             if (calendar == null) return new List<calendar_information_reply>();
 
             var request = CreateAzureRequest(calendar, azureRequest);
@@ -58,19 +58,20 @@ namespace CalendarExtractor.Web.Client.Data
             return replyEventList;
         }
 
-        private calendar_information_request.Types.Calendar CreateCalendar(int minutes, string calendarId)
+        private calendar_information_request.Types.Calendar CreateCalendar(AzureRequestModel request)
         {
-            var startTime = DateTime.Now.ToLocalTime();
-            var endTime = startTime.AddMinutes(minutes);
+
+            var startTime = request.StartTime;
+            var endTime = request.EndTime;
 
             Console.WriteLine("Beginn Abfrage: " + startTime.ToString("g"));
             Console.WriteLine("Ende Abfrage: " + endTime.ToString("g"));
 
             return new calendar_information_request.Types.Calendar
             {
-                CalendarId = calendarId,
-                BeginTimestamp = CreateTimestampOf(startTime),
-                EndTimestamp = CreateTimestampOf(endTime)
+                CalendarId = request.CalendarId,
+                BeginTime = CreateUnixTimeOf(startTime),
+                EndTime = CreateUnixTimeOf(endTime)
             };
         }
         
@@ -89,11 +90,11 @@ namespace CalendarExtractor.Web.Client.Data
             };
         }
 
-        private Timestamp CreateTimestampOf(DateTime dateTime)
+        private long CreateUnixTimeOf(DateTime dateTime)
         {
             DateTimeOffset offset = dateTime;
 
-            return offset.ToTimestamp();
+            return offset.ToUnixTimeSeconds();
         }
     }
 }

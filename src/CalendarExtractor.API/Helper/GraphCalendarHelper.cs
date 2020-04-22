@@ -31,8 +31,8 @@ namespace CalendarExtractor.API.Helper
                 var startFilter = DateTimeOffset.FromUnixTimeSeconds(calendar.BeginTime).DateTime.ToString("o");
                 var endFilter = DateTimeOffset.FromUnixTimeSeconds(calendar.EndTime).DateTime.ToString("o");
 
-                _logger.LogInformation($"Start filter datetime: {startFilter}");
-                _logger.LogInformation($"End filter dateTime {endFilter}");
+                _logger.LogInformation($"Start filter datetime UTC: {startFilter}");
+                _logger.LogInformation($"End filter dateTime UTC: {endFilter}");
 
                 var resultPage = await _graphClient.Users[calendar.CalendarId].Events
                     .Request()
@@ -51,20 +51,6 @@ namespace CalendarExtractor.API.Helper
             }
         }
 
-        private IEnumerable<Event> GetAllEventsBasedOnPage(IUserEventsCollectionPage resultPage)
-        {
-            var allEvents = new List<Event>();
-            do
-            {
-                var eventsOfCurrentPage = resultPage.CurrentPage.ToList();
-                allEvents.AddRange(eventsOfCurrentPage);
-
-                resultPage = resultPage.NextPageRequest?.GetAsync().Result;
-            } while (resultPage != null);
-
-            return allEvents;
-        }
-
         /// <summary>
         /// Only for test purposes, to test filter of <see cref="GetEventsAsync(AzureRequest.Types.Calendar)"/>
         /// </summary>
@@ -77,6 +63,20 @@ namespace CalendarExtractor.API.Helper
                                 && FormatDateTimeTimeZoneToLocal(e.End).DateTime.CompareTo(endFilter.DateTime) < 0)
                             || (FormatDateTimeTimeZoneToLocal(e.Start).DateTime.CompareTo(startFilter.DateTime) < 0
                                 && FormatDateTimeTimeZoneToLocal(e.End).DateTime.CompareTo(endFilter.DateTime) > 0));
+        }
+
+        private IEnumerable<Event> GetAllEventsBasedOnPage(IUserEventsCollectionPage resultPage)
+        {
+            var allEvents = new List<Event>();
+            do
+            {
+                var eventsOfCurrentPage = resultPage.CurrentPage.ToList();
+                allEvents.AddRange(eventsOfCurrentPage);
+
+                resultPage = resultPage.NextPageRequest?.GetAsync().Result;
+            } while (resultPage != null);
+
+            return allEvents;
         }
     }
 }

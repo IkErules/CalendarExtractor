@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using CalendarExtractor.API
 @using CalendarExtractor.Web.Client.Data
+@using CalendarExtractor.Web.Client.Shared.Components
 @inject AzureService AzrueService
 
 <h1>Make a simple API call to read calendars of rooms</h1>
@@ -28,8 +29,18 @@
                 <td><InputText id="calendarId" @bind-Value="_azureRequestModel.CalendarId" @bind-style="_inputWidth" /></td>
             </tr>
             <tr>
-                <td>Has events in next ... minutes</td>
-                <td><InputNumber id="calendarId" @bind-Value="_azureRequestModel.Minutes" @bind-style="_inputWidth" /></td>
+                <td>Start filter</td>
+                <td>
+                    <DatePicker InitialDate="@DateTime.Now" DateSelected="OnStartDateSelected"></DatePicker>
+                    <h6>@_azureRequestModel.StartTime.ToString("g")</h6>
+                </td>
+            </tr>
+            <tr>
+                <td>End filter</td>
+                <td>
+                    <DatePicker InitialDate="@DateTime.Now" DateSelected="OnEndDateSelected"></DatePicker>
+                    <h6>@_azureRequestModel.EndTime.ToString("g")</h6>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -37,33 +48,32 @@
     <button type="submit">Submit</button>
 </EditForm>
 
-    @if (_events == null)
-    {
-        <p><em>No events found yet...</em></p>
-    }
-    else
-    {
-        <table class="table">
-            <thead>
+@if (_events == null)
+{
+    <p><em>No events found yet...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Start</th>
+                <th>End</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var foundEvent in _events)
+            {
                 <tr>
-                    <th>Description</th>
-                    <th>Start</th>
-                    <th>End</th>
+                    <td>@foundEvent.Subject</td>
+                    <td>@DateTimeOffset.FromUnixTimeSeconds(foundEvent.BeginTime).LocalDateTime.ToString("g")</td>
+                    <td>@DateTimeOffset.FromUnixTimeSeconds(foundEvent.EndTime).LocalDateTime.ToString("g")</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var foundEvent in _events)
-                {
-                    <tr>
-                        <td>@foundEvent.Subject</td>
-                        <td>@foundEvent.BeginTimestamp.ToDateTime().ToLocalTime().ToString("g")</td>
-                        <td>@foundEvent.EndTimestamp.ToDateTime().ToLocalTime().ToString("g")</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-
+            }
+        </tbody>
+    </table>
+}
 
 
 @code {
@@ -74,5 +84,15 @@
     private async void HandleValidSubmit()
     {
         _events = await AzrueService.ReadCalendarEventsFor(_azureRequestModel);
+    }
+
+    public void OnStartDateSelected(DateTime dt)
+    {
+        _azureRequestModel.StartTime = dt;
+    }
+
+    public void OnEndDateSelected(DateTime dt)
+    {
+        _azureRequestModel.EndTime = dt;
     }
 }
