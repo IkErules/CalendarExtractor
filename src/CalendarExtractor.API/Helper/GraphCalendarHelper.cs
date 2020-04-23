@@ -24,7 +24,7 @@ namespace CalendarExtractor.API.Helper
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Event>> GetEventsAsync(calendar_information_request.Types.Calendar calendar)
+        public async Task<IEnumerable<Event>> GetEventsAsync(CalendarInformationRequest.Types.Calendar calendar)
         {
             try
             {

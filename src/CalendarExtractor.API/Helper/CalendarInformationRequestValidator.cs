@@ -19,7 +19,7 @@ namespace CalendarExtractor.API.Helper
             _logger = logger;
         }
 
-        public bool Validate(calendar_information_request request)
+        public bool Validate(CalendarInformationRequest request)
         {
             ValidateEmptyString(request);
             ValidateValidGuid(request);
@@ -28,7 +28,7 @@ namespace CalendarExtractor.API.Helper
             return true;
         }
 
-        private void ValidateValidTime(calendar_information_request request)
+        private void ValidateValidTime(CalendarInformationRequest request)
         {
             if (request.Calendar.EndTime < request.Calendar.BeginTime)
                 _errors.Add(new Metadata.Entry("Timestamps", NotValidTimeErrorMessage));
@@ -44,7 +44,7 @@ namespace CalendarExtractor.API.Helper
             }
         }
 
-        private void ValidateValidGuid(calendar_information_request request)
+        private void ValidateValidGuid(CalendarInformationRequest request)
         {
             if (!IsValidGuid(request.Client.ClientId))
                 _errors.Add(new Metadata.Entry("ClientId", NoValidGuidErrorErrorMessage));
@@ -65,7 +65,7 @@ namespace CalendarExtractor.API.Helper
             return Guid.TryParse(toValidate, out _);
         }
 
-        private void ValidateEmptyString(calendar_information_request request)
+        private void ValidateEmptyString(CalendarInformationRequest request)
         {
             if (string.IsNullOrEmpty(request.Client?.ClientId))
                 _errors.Add(new Metadata.Entry("ClientId", EmptyStringMessage));

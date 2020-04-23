@@ -30,7 +30,7 @@ namespace CalendarExtractor.API
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<CalendarAccess>();
+                endpoints.MapGrpcService<CalendarAccessController>();
 
                 endpoints.MapGet("/", async context =>
                 {

@@ -20,7 +20,7 @@ namespace CalendarExtractor.API.Helper
             _logger = logger;
         }
 
-        public async Task<IEnumerable<room_reply>> GetAllRoomsAsnc(calendar_information_request.Types.Calendar calendar)
+        public async Task<IEnumerable<RoomReply>> GetAllRoomsAsnc(CalendarInformationRequest.Types.Calendar calendar)
         {
             _logger.LogInformation($"Getting all rooms for {calendar.CalendarId}...");
 
@@ -44,10 +44,10 @@ namespace CalendarExtractor.API.Helper
             return allEvents;
         }
 
-        private IEnumerable<room_reply> ConvertToRoomReplies(IEnumerable<EmailAddress> emailAddresses)
+        private IEnumerable<RoomReply> ConvertToRoomReplies(IEnumerable<EmailAddress> emailAddresses)
         {
             return emailAddresses
-                .Select(e => new room_reply()
+                .Select(e => new RoomReply()
                 {
                     Name = e.Name,
                     RoomId = e.Address

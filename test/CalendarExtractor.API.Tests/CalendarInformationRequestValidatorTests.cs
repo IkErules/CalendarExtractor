@@ -21,14 +21,14 @@ namespace CalendarExtractor.API.Tests
         public void Validate_EmptyParams_ThrowsError()
         {
             // given
-            var request = new calendar_information_request
+            var request = new CalendarInformationRequest
             {
-                Client = new calendar_information_request.Types.Client
+                Client = new CalendarInformationRequest.Types.Client
                 {
                     ClientId = string.Empty,
                     TenantId = string.Empty,
                 },
-                Calendar = new calendar_information_request.Types.Calendar
+                Calendar = new CalendarInformationRequest.Types.Calendar
                 {
                     CalendarId = string.Empty,
                     BeginTime = CreateUnixTimeOf(DateTime.Now),
@@ -50,15 +50,15 @@ namespace CalendarExtractor.API.Tests
             // given
             var invalidGuidString = "816c3a23-7568-40a1-b12-c65795fcbd";
 
-            var request = new calendar_information_request
+            var request = new CalendarInformationRequest
             {
-                Client = new calendar_information_request.Types.Client
+                Client = new CalendarInformationRequest.Types.Client
                 {
                     ClientId = invalidGuidString,
                     ClientSecret = "mySecret",
                     TenantId = ValidGuidString,
                 },
-                Calendar = new calendar_information_request.Types.Calendar
+                Calendar = new CalendarInformationRequest.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
                     BeginTime = CreateUnixTimeOf(DateTime.Now),
@@ -78,9 +78,9 @@ namespace CalendarExtractor.API.Tests
         public void Validate_NoClientSent_ThrowsError()
         {
             // given
-            var request = new calendar_information_request
+            var request = new CalendarInformationRequest
             {
-                Calendar = new calendar_information_request.Types.Calendar
+                Calendar = new CalendarInformationRequest.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
                     BeginTime = CreateUnixTimeOf(DateTime.Now),
@@ -100,9 +100,9 @@ namespace CalendarExtractor.API.Tests
         public void Validate_NoCalendarSent_ThrowsError()
         {
             // given
-            var request = new calendar_information_request
+            var request = new CalendarInformationRequest
             {
-                Client = new calendar_information_request.Types.Client
+                Client = new CalendarInformationRequest.Types.Client
                 {
                     ClientId = ValidGuidString,
                     ClientSecret = "mySecret",
@@ -122,15 +122,15 @@ namespace CalendarExtractor.API.Tests
         public void Validate_NoErrorsFound()
         {
             // given
-            var request = new calendar_information_request
+            var request = new CalendarInformationRequest
             {
-                Client = new calendar_information_request.Types.Client
+                Client = new CalendarInformationRequest.Types.Client
                 {
                     ClientId = ValidGuidString,
                     ClientSecret = "mySecret",
                     TenantId = ValidGuidString,
                 },
-                Calendar = new calendar_information_request.Types.Calendar
+                Calendar = new CalendarInformationRequest.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
                     BeginTime = CreateUnixTimeOf(DateTime.Now),
@@ -149,15 +149,15 @@ namespace CalendarExtractor.API.Tests
         public void Validate_DefaultTimeValues_ThrowsException()
         {
             // given
-            var request = new calendar_information_request
+            var request = new CalendarInformationRequest
             {
-                Client = new calendar_information_request.Types.Client
+                Client = new CalendarInformationRequest.Types.Client
                 {
                     ClientId = ValidGuidString,
                     ClientSecret = "mySecret",
                     TenantId = ValidGuidString,
                 },
-                Calendar = new calendar_information_request.Types.Calendar
+                Calendar = new CalendarInformationRequest.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com"
                 }
@@ -175,15 +175,15 @@ namespace CalendarExtractor.API.Tests
         public void Validate_EndBeforeBeginTimestamps_ThrowsError()
         {
             // given
-            var request = new calendar_information_request
+            var request = new CalendarInformationRequest
             {
-                Client = new calendar_information_request.Types.Client
+                Client = new CalendarInformationRequest.Types.Client
                 {
                     ClientId = ValidGuidString,
                     ClientSecret = "mySecret",
                     TenantId = ValidGuidString,
                 },
-                Calendar = new calendar_information_request.Types.Calendar
+                Calendar = new CalendarInformationRequest.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
                     BeginTime = CreateUnixTimeOf(DateTime.Now),
@@ -204,15 +204,15 @@ namespace CalendarExtractor.API.Tests
         {
             // given
             var timestamp = CreateUnixTimeOf(DateTime.Now);
-            var request = new calendar_information_request
+            var request = new CalendarInformationRequest
             {
-                Client = new calendar_information_request.Types.Client
+                Client = new CalendarInformationRequest.Types.Client
                 {
                     ClientId = ValidGuidString,
                     ClientSecret = "mySecret",
                     TenantId = ValidGuidString,
                 },
-                Calendar = new calendar_information_request.Types.Calendar
+                Calendar = new CalendarInformationRequest.Types.Calendar
                 {
                     CalendarId = "myCalendar@microsoft.com",
                     BeginTime = timestamp,

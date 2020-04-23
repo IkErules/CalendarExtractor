@@ -4,20 +4,19 @@ option csharp_namespace = "CalendarExtractor.API";
 
 package calendar_access;
 
-service calendar_access {
-	rpc get_calendar_information (calendar_information_request) returns (stream calendar_information_reply);
-	rpc get_all_rooms_of_organisation (calendar_information_request) returns (stream room_reply);
-	rpc test_get_calendar_information (calendar_information_request) returns (stream calendar_information_reply);
+service CalendarAccess {
+	rpc get_calendar_information (CalendarInformationRequest) returns (stream CalendarInformationReply);
+	rpc get_all_rooms_of_organisation (CalendarInformationRequest) returns (stream RoomReply);
 }
 
-message calendar_information_request {
+message CalendarInformationRequest {
 	message Client {
 		string client_id = 1;
 		string client_secret = 2;
 		string tenant_id = 3;
 	}
 	message Calendar {
-		string calendar_id = 1;
+		string calendar_id = 1; 
 		int64 begin_time = 2;
 		int64 end_time = 3;
 	}
@@ -25,13 +24,13 @@ message calendar_information_request {
 	Calendar calendar = 2;
 }
 
-message calendar_information_reply {
+message CalendarInformationReply {
 	string subject = 1;
 	int64 begin_time = 2;
 	int64 end_time = 3;
 }
 
-message room_reply {
+message RoomReply {
 	string name = 1;
 	string room_id = 2;
 }
